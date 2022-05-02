@@ -10,5 +10,10 @@ const app = createApp(App);
 
 axios.defaults.baseURL = '/api'
 app.config.globalProperties.$http = axios
-
+router.beforeEach((to,from,next)=>{
+    if(to.meta.title){
+        document.title = to.meta.title+"";
+    }
+    next();
+})
 app.use(store).use(router).use(ElementPlus).mount('#app')

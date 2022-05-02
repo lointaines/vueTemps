@@ -1,49 +1,30 @@
 <template>
   <div>
-    <el-button type="primary" @click="dialogFormVisibleAdd = true">新增用户</el-button>
+    <el-button type="primary" @click="dialogFormVisibleAdd = true">新增角色</el-button>
     <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="id" label="用户编号" width="140" v-if="false" />
-      <el-table-column prop="name" label="用户名称" width="120" />
-      <el-table-column prop="state" label="状态" align="center">
-        <template #default="scope">
-          <div>
-            <el-switch v-model="scope.row.state" @change="stateChange(scope.row)" />
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="sex" label="性别" align="center" />
-      <el-table-column prop="birthday" label="生日" />
-      <el-table-column prop="email" label="邮箱" />
-      <el-table-column prop="createTime" label="注册时间" min-width="85px"/>
-      <el-table-column label="操作" width="170" align="center">
-        <template #default="scope">
-          <!-- <el-button size="small" @click="handleEdit(scope.row)">cha</el-button> -->
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column prop="id" label="角色编号" width="140" v-if="false" />
+      <el-table-column prop="name" label="角色名称" width="120" />
+      <el-table-column prop="description" label="角色描述" align="center"/>
     </el-table>
     <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
       :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
-
-    <el-dialog v-model="dialogFormVisibleAdd" title="新增用户" width="500px" :close-on-click-modal="false" draggable>
-      <el-form :model="form" :rules="rules" @keyup.enter="addUser(formRef)" ref="formRef">
-        <el-form-item label="登录名" label-width="100px" prop="name">
-          <el-input v-model="form.name" autocomplete="off" placeholder="请输入用户名" />
+    <el-dialog v-model="dialogFormVisibleAdd" title="新增角色" width="500px" :close-on-click-modal="false" draggable>
+      <el-form :model="form" :rules="rules" @keyup.enter="addRole(formRef)" ref="formRef">
+        <el-form-item label="角色名称" label-width="100px" prop="name">
+          <el-input v-model="form.name" autocomplete="off" placeholder="请输入角色名" />
         </el-form-item>
-        <el-form-item label="密码" label-width="100px" prop="password">
-          <el-input v-model="form.password" placeholder="请输入登录密码" />
+        <el-form-item label="角色描述" label-width="100px" prop="description">
+          <el-input v-model="form.description" placeholder="请输入角色描述" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisibleAdd = false">取消</el-button>
-          <el-button type="primary" @click="addUser(formRef)">新增用户</el-button>
+          <el-button type="primary" @click="addRole(formRef)">新增角色</el-button>
         </span>
       </template>
     </el-dialog>
-
-
   </div>
 </template>
 <script lang="ts" setup>
@@ -60,23 +41,18 @@ const dialogFormVisibleAdd = ref(false);
 
 const form = ref({
   name: "",
-  password: "",
+  description: "",
 });
 const formRef = ref();
 const rules = ref({
   name: [{
-    required: true, message: "姓名不能为空", trigger: "blur"
-  }],
-  password: [{
-    required: true, message: "密码不能为空", trigger: "blur"
+    required: true, message: "名称不能为空", trigger: "blur"
   }],
 });
-const dateFormat=(row:any)=>{
-  return 
-}
+
 const stateChange = (row: any) => {
   let title = row.state == false ? "是否禁用名称为" : "是否启用名称为";
-  ElMessageBox.confirm(title + row.name + "的用户？", "警告", {
+  ElMessageBox.confirm(title + row.name + "的角色？", "警告", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
@@ -87,7 +63,7 @@ const stateChange = (row: any) => {
       params.append("id", row.id);
       params.append("state", String(row.state));
       proxy.$http
-        .post("tibetan/user/updateUserById", params)
+        .post("tibetan/role/updateRoleById", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -95,7 +71,7 @@ const stateChange = (row: any) => {
           } else {
             ElMessage.error("更新失败");
           }
-          getUser();
+          getRole();
         });
     })
     .catch(() => {
@@ -108,11 +84,11 @@ const handleEdit = function (row: any) {
   let params = new URLSearchParams();
   params.append("id", row.id);
   proxy.$http
-    .post("tibetan/user/getUserById", params)
+    .post("tibetan/role/getRoleById", params)
     .then((res: any) => {
       if (res.data.code == 200) {
         ElMessage.success("删除成功");
-        getUser();
+        getRole();
       } else {
         ElMessage.error("删除失败");
       }
@@ -120,7 +96,7 @@ const handleEdit = function (row: any) {
 };
 
 const handleDelete = (row: any) => {
-  ElMessageBox.confirm("是否删除名称为" + row.name + "的用户？", "警告", {
+  ElMessageBox.confirm("是否删除名称为" + row.name + "的角色？", "警告", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
@@ -130,11 +106,11 @@ const handleDelete = (row: any) => {
       let params = new URLSearchParams();
       params.append("id", row.id);
       proxy.$http
-        .post("tibetan/user/deleteUserById", params)
+        .post("tibetan/role/deleteRoleById", params)
         .then((res: any) => {
           if (res.data.code == 200) {
             ElMessage.success("删除成功");
-            getUser();
+            getRole();
           } else {
             ElMessage.error("删除失败");
           }
@@ -147,54 +123,54 @@ const handleDelete = (row: any) => {
 
 const handleSizeChange = function (val: number) {
   pageSize.value = val;
-  getUser();
+  getRole();
 };
 
 const handleCurrentChange = function (val: number) {
   currentPage.value = val;
-  getUser();
+  getRole();
 };
 
-function getUser() {
+function getRole() {
   let params = new URLSearchParams();
   params.append("pageSize", String(pageSize.value));
   params.append("currentPage", String(currentPage.value));
-  proxy.$http.post("tibetan/user/getAllUser", params).then((res: any) => {
+  proxy.$http.post("tibetan/role/getAllRole", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
     console.log(res.data)
   });
 }
 
-async function addUser(formSubmit: any) {
+async function addRole(formSubmit: any) {
   await formSubmit.validate((valid: any) => {
     if (valid) {
       let value = form.value;
       let params = new URLSearchParams();
       params.append("name", value.name);
-      params.append("password", value.password);
+      params.append("description", value.description);
       proxy.$http
-        .post("tibetan/home/register", params)
+        .post("tibetan/role/addRole", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
-            ElMessage.success("新增用户成功");
+            ElMessage.success("新增角色成功");
             dialogFormVisibleAdd.value = false
             formSubmit.resetFields();
-            getUser();
+            getRole();
           } else {
-            ElMessage.error("新增用户失败,用户名重复");
+            ElMessage.error("新增角色失败");
           }
         });
     } else {
       return false;
     }
   });
-  getUser();
+  getRole();
 }
 
 onMounted(() => {
-  getUser();
+  getRole();
 });
 </script>
 <style scoped>
