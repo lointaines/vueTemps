@@ -1,11 +1,17 @@
 <template>
   <div>
-    <el-button type="primary" @click="dialogFormVisibleAdd = true">新增角色</el-button>
+    <el-button type="primary" @click="dialogFormVisibleAdd = true" class = "addButton">新增角色</el-button>
     <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="角色编号" width="140" v-if="false" />
-      <el-table-column prop="name" label="角色名称" width="120" />
-      <el-table-column prop="description" label="角色描述" align="center"/>
+      <el-table-column prop="name" label="角色名称" />
+      <el-table-column prop="description" label="角色描述" />
+        <el-table-column label="操作" width="170" align="center">
+        <template #default="scope">
+          <!-- <el-button size="small" @click="handleEdit(scope.row)">cha</el-button> -->
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
       :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
@@ -50,50 +56,6 @@ const rules = ref({
   }],
 });
 
-const stateChange = (row: any) => {
-  let title = row.state == false ? "是否禁用名称为" : "是否启用名称为";
-  ElMessageBox.confirm(title + row.name + "的角色？", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    draggable: true,
-  })
-    .then(() => {
-      let params = new URLSearchParams();
-      params.append("id", row.id);
-      params.append("state", String(row.state));
-      proxy.$http
-        .post("tibetan/role/updateRoleById", params)
-        .then((res: any) => {
-          let result = res.data;
-          if (result.code == 200) {
-            ElMessage.success("更新成功");
-          } else {
-            ElMessage.error("更新失败");
-          }
-          getRole();
-        });
-    })
-    .catch(() => {
-      ElMessage.info("操作取消");
-      row.state = !row.state;
-    });
-}
-
-const handleEdit = function (row: any) {
-  let params = new URLSearchParams();
-  params.append("id", row.id);
-  proxy.$http
-    .post("tibetan/role/getRoleById", params)
-    .then((res: any) => {
-      if (res.data.code == 200) {
-        ElMessage.success("删除成功");
-        getRole();
-      } else {
-        ElMessage.error("删除失败");
-      }
-    });
-};
 
 const handleDelete = (row: any) => {
   ElMessageBox.confirm("是否删除名称为" + row.name + "的角色？", "警告", {
@@ -106,7 +68,7 @@ const handleDelete = (row: any) => {
       let params = new URLSearchParams();
       params.append("id", row.id);
       proxy.$http
-        .post("tibetan/role/deleteRoleById", params)
+        .post("role/deleteRoleById", params)
         .then((res: any) => {
           if (res.data.code == 200) {
             ElMessage.success("删除成功");
@@ -135,7 +97,7 @@ function getRole() {
   let params = new URLSearchParams();
   params.append("pageSize", String(pageSize.value));
   params.append("currentPage", String(currentPage.value));
-  proxy.$http.post("tibetan/role/getAllRole", params).then((res: any) => {
+  proxy.$http.post("role/getAllRole", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
     console.log(res.data)
@@ -150,7 +112,7 @@ async function addRole(formSubmit: any) {
       params.append("name", value.name);
       params.append("description", value.description);
       proxy.$http
-        .post("tibetan/role/addRole", params)
+        .post("role/addRole", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -174,4 +136,7 @@ onMounted(() => {
 });
 </script>
 <style scoped>
+.addButton{
+  margin-bottom: 10px;
+}
 </style>

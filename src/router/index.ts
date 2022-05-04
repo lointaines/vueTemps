@@ -6,25 +6,30 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: Home,
-    redirect: '/userInfo',
+    redirect: '/userManage',
     meta: {
       title: "西藏文化"
     },
     children: [
       {
-        path: '/userInfo',
-        name: 'userInfo',
-        component: () => import('@/views/user/userInfo.vue'),
+        path: '/userManage',
+        name: 'userManage',
+        component: () => import('@/views/user/userManage.vue'),
       },
       {
-        path: '/roleManager',
-        name: 'roleManager',
-        component: () => import('@/views/user/roleManager.vue'),
+        path: '/roleManage',
+        name: 'roleManage',
+        component: () => import('@/views/user/roleManage.vue'),
       },
       {
-        path: '/roleAuthorization',
-        name: 'roleAuthorization',
-        component: () => import('@/views/user/roleAuthorization.vue'),
+        path: '/userAndRole',
+        name: 'userAndRole',
+        component: () => import('@/views/user/userAndRole.vue'),
+      },
+      {
+        path: '/itemManage',
+        name: 'itemManage',
+        component: () => import('@/views/item/itemManage.vue'),
       },
     ]
   },

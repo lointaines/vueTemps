@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button type="primary" @click="dialogFormVisibleAdd = true" class="addButton">新增用户</el-button>
-    <el-table :data="tableData" text-align="center" stripe border>
+    <el-table :data="tableData" text-align="center" stripe border :v-loading="tableLoading">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="用户编号" width="140" v-if="false" />
       <el-table-column prop="name" label="用户名称" width="120" />
@@ -50,11 +50,14 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeft, ArrowRight, Delete, Edit, Share, } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;
 
-const total = ref(0);
+
 const tableData = ref([]);
+const tableLoading = ref(false);
+const total = ref(0);
 const pageSize = ref(5);
 const currentPage = ref(1);
 const dialogFormVisibleAdd = ref(false);
+
 
 const form = ref({
   name: "",
@@ -69,9 +72,7 @@ const rules = ref({
     required: true, message: "密码不能为空", trigger: "blur"
   }],
 });
-const dateFormat = (row: any) => {
-  return
-}
+
 const stateChange = (row: any) => {
   let title = row.state == false ? "是否禁用名称为" : "是否启用名称为";
   ElMessageBox.confirm(title + row.name + "的用户？", "警告", {
@@ -81,14 +82,18 @@ const stateChange = (row: any) => {
     draggable: true,
   })
     .then(() => {
+      tableLoading.value = true;
       let params = new URLSearchParams();
       params.append("id", row.id);
       params.append("state", String(row.state));
+      console.log(row.id,row.state)
       proxy.$http
         .post("user/updateUserById", params)
         .then((res: any) => {
           let result = res.data;
+           console.log(result)
           if (result.code == 200) {
+           
             ElMessage.success("更新成功");
           } else {
             ElMessage.error("更新失败");
@@ -102,21 +107,6 @@ const stateChange = (row: any) => {
     });
 }
 
-const handleEdit = function (row: any) {
-  let params = new URLSearchParams();
-  params.append("id", row.id);
-  proxy.$http
-    .post("user/getUserById", params)
-    .then((res: any) => {
-      if (res.data.code == 200) {
-        ElMessage.success("删除成功");
-        getUser();
-      } else {
-        ElMessage.error("删除失败");
-      }
-    });
-};
-
 const handleDelete = (row: any) => {
   ElMessageBox.confirm("是否删除名称为" + row.name + "的用户？", "警告", {
     confirmButtonText: "确认",
@@ -125,6 +115,7 @@ const handleDelete = (row: any) => {
     draggable: true,
   })
     .then(() => {
+     
       let params = new URLSearchParams();
       params.append("id", row.id);
       proxy.$http
@@ -160,6 +151,7 @@ function getUser() {
   proxy.$http.post("user/getAllUser", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
+    tableLoading.value = false;
     console.log(res.data)
   });
 }
