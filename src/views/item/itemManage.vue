@@ -31,6 +31,8 @@ const total = ref(0);
 const tableData = ref([]);
 const pageSize = ref(5);
 const currentPage = ref(1);
+const orderField = ref("name");
+const orderDirection = ref("descending");
 
 const handleSizeChange = function (val: number) {
   pageSize.value = val;
@@ -55,17 +57,19 @@ const handleDelete = function (row: any) {
 };
 
 const handleDetail = function (row: any) {
-  
+
 };
 
 const handleEdit = function (row: any) {
-  
+
 };
 
 async function getItem() {
   let params = new URLSearchParams();
   params.append("pageSize", String(pageSize.value));
   params.append("currentPage", String(currentPage.value));
+  params.append("orderField", String(orderField.value));
+  params.append("orderDirection", String(orderDirection.value));
   await proxy.$http.post("item/getAllItem", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;

@@ -31,6 +31,16 @@ const routes: Array<RouteRecordRaw> = [
         name: 'itemManage',
         component: () => import('@/views/item/itemManage.vue'),
       },
+      {
+        path: '/itemAdd',
+        name: 'itemAdd',
+        component: () => import('@/views/item/itemAdd.vue'),
+      },
+      {
+        path: '/itemTypeManage',
+        name: 'itemTypeManage',
+        component: () => import('@/views/item/itemTypeManage.vue'),
+      },
     ]
   },
   {

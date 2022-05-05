@@ -32,7 +32,7 @@
                 <span>用户管理</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="/userManage">用户信息</el-menu-item>
+                <el-menu-item index="/userManage">用户管理</el-menu-item>
                 <el-menu-item index="/roleManage">角色管理</el-menu-item>
                 <el-menu-item index="/userAndRole">用户授权</el-menu-item>
               </el-menu-item-group>
@@ -45,8 +45,9 @@
                 <span>文化资源管理</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="/itemManage">资源信息</el-menu-item>
-                <el-menu-item index="2-2">Option 2</el-menu-item>
+                <el-menu-item index="/itemManage">资源管理</el-menu-item>
+                <el-menu-item index="/itemAdd">添加资源</el-menu-item>
+                  <el-menu-item index="/itemTypeManage">资源类别管理</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
           </el-menu>
