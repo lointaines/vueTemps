@@ -40,6 +40,10 @@ const routes: Array<RouteRecordRaw> = [
         path: '/itemTypeManage',
         name: 'itemTypeManage',
         component: () => import('@/views/item/itemTypeManage.vue'),
+      },{
+        path: '/itemDetail',
+        name: 'itemDetail',
+        component: () => import('@/views/item/itemDetail.vue')
       },
     ]
   },
@@ -48,6 +52,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: () => import('@/views/login.vue')
   },
+  
 
   {
     path: '/:catchAll(.*)',

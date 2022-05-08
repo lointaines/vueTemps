@@ -5,13 +5,13 @@
       <el-table-column prop="id" label="资源编号" v-if="false" />
       <el-table-column prop="name" label="资源名称"></el-table-column>
       <el-table-column prop="state" label="资源状态"></el-table-column>
-      <el-table-column prop="type" label="资源类型"></el-table-column>
+      <el-table-column prop="itemType.name" label="资源类型"></el-table-column>
       <el-table-column prop="originalTime" label="起源时间"></el-table-column>
       <el-table-column prop="creatTime" label="创建时间"></el-table-column>
       <el-table-column prop="editTime" label="上次编辑时间"></el-table-column>
       <el-table-column label="操作" width="170" align="center">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.row)">cha</el-button>
+          <el-button size="small" @click="handleEdit(scope.row)">查看</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -21,9 +21,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
+import { getCurrentInstance, ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Check, Close } from '@element-plus/icons-vue'
+import { useRouter } from "vue-router";
 
 const { proxy } = getCurrentInstance() as any;
 
@@ -33,7 +34,7 @@ const pageSize = ref(5);
 const currentPage = ref(1);
 const orderField = ref("name");
 const orderDirection = ref("descending");
-
+const router = useRouter();
 const handleSizeChange = function (val: number) {
   pageSize.value = val;
   getItem();
@@ -45,23 +46,42 @@ const handleCurrentChange = function (val: number) {
 };
 
 const handleDelete = function (row: any) {
-  let params = new URLSearchParams();
-  params.append("id", row.id);
-  proxy.$http.post("item/deleteById", params).then((res: any) => {
-    if (res.data.code === 200) {
-      ElMessage.success("删除成功");
-    } else {
-      ElMessage.success("删除失败");
-    }
-  });
-};
-
+  ElMessageBox.confirm("确定删除'" + row.name + "'?", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    draggable: true,
+  })
+    .then(() => {
+      let params = new URLSearchParams();
+      params.append("id", row.id);
+      proxy.$http.post("item/deleteItemById", params).then((res: any) => {
+        if (res.data.code === 200) {
+          ElMessage.success("删除成功");
+          getItem();
+        } else {
+          ElMessage.error("删除失败");
+        }
+      });
+    })
+    .catch(() => {
+      ElMessage.info("操作取消");
+    });
+}
 const handleDetail = function (row: any) {
-
+  const router = useRouter();
+  router.resolve("itemAdd")
 };
 
 const handleEdit = function (row: any) {
-
+  let routerData = router.resolve({
+    name: "itemDetail",
+    path: '/itemDetail',
+    query: {
+      'id': row.id,
+    }
+  });
+  window.open(routerData.href, '_blank')
 };
 
 async function getItem() {
@@ -73,6 +93,7 @@ async function getItem() {
   await proxy.$http.post("item/getAllItem", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
+    console.log(res.data.data.content)
   });
 }
 
