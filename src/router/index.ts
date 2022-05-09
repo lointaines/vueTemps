@@ -15,6 +15,10 @@ const routes: Array<RouteRecordRaw> = [
         path: '/userManage',
         name: 'userManage',
         component: () => import('@/views/user/userManage.vue'),
+      },{
+        path: '/userInfo',
+        name: 'userInfo',
+        component: () => import('@/views/user/userInfo.vue')
       },
       {
         path: '/roleManage',

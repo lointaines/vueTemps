@@ -1,43 +1,112 @@
 <template>
-  <el-form :model="form" label-width="120px" v-model="Right">
-    <el-form-item label=" name">
-      <el-input v-model="form.name" />
-    </el-form-item>
-    <el-form-item label=" password">
-      <el-input v-model="form.password" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm(ruleFormRef)">Create</el-button>
-      <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
-    </el-form-item>
-  </el-form>
+  <div class="loginAll">
+    <el-form :model="form" label-width="80px" class="loginForm" :rules="rule" ref="ruleFormRef">
+      <h3 class="loginTitle"> 西藏民族文化资源管理</h3>
+      <el-form-item label=" 登录名" prop="name">
+        <el-input v-model="form.name" placeholder="请输入用户名" />
+      </el-form-item>
+      <el-form-item label=" 密码" prop="password">
+        <el-input v-model="form.password" placeholder="密码" type="password" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm(ruleFormRef)">登录</el-button>
+        <el-button @click="resetForm(ruleFormRef)">注册</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import type { FormInstance } from "element-plus";
-//默认值
-const form = reactive({
-  name: "name",
-  password: "password",
-});
+import { ElMessage, ElMessageBox } from "element-plus";
+import { ArrowLeft, ArrowRight, Delete, Edit, Share, } from '@element-plus/icons-vue'
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
-const onSubmit = () => {
-  console.log("submit!");
-};
-const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid, fields) => {
+const { proxy } = getCurrentInstance() as any;
+const router = useRouter();
+const store = useStore();
+const form = ref({
+  name: "",
+  password: "",
+});
+const rule = ref({
+  name: [{
+    required: true, message: "姓名不能为空", trigger: "blur"
+  }],
+  password: [{
+    required: true, message: "密码不能为空", trigger: "blur"
+  }],
+});
+const ruleFormRef = ref();
+const submitForm = async (formEl: any) => {
+  await formEl.validate((valid: any) => {
     if (valid) {
-      console.log("submit!");
-    } else {
-      console.log("error submit!", fields);
+      let value = form.value;
+      let params = new URLSearchParams();
+      params.append("name", value.name);
+      params.append("password", value.password);
+      proxy.$http
+        .post("home/login", params)
+        .then((res: any) => {
+          let result = res.data;
+          if (result.code == 200) {
+            ElMessage.success("登录成功");
+            store.commit('setUserId', result.data);
+            router.push("/")
+          } else {
+            ElMessage.error(result.msg);
+          }
+        });
     }
   });
 };
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
+const resetForm = async (formEl: any) => {
+  await formEl.validate((valid: any) => {
+    if (valid) {
+      let value = form.value;
+      let params = new URLSearchParams();
+      params.append("name", value.name);
+      params.append("password", value.password);
+      proxy.$http
+        .post("home/register", params)
+        .then((res: any) => {
+          let result = res.data;
+          if (result.code == 200) {
+            ElMessage.success("注册成功");
+          } else {
+            ElMessage.error(result.msg);
+          }
+        });
+    }
+  });
 };
 </script>
+<style scoped>
+.loginAll {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-image: url('../assets/无标题_4x.png');
+  background-size: 100% 100%;
+}
+
+.loginForm {
+  padding: 10px;
+  position: absolute;
+  right: 150px;
+  top: 100px;
+  width: 300px;
+  height: 300px;
+  /* filter: blur(1px); */
+  background-color: #a0cfff;
+}
+
+.loginTitle {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 80px;
+}
+</style>
