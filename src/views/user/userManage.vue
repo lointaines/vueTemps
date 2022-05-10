@@ -1,14 +1,19 @@
 <template>
   <div>
-
-    <el-form :model="searchForm">
-      <el-form-item label="姓名">
-        <el-input v-model="form.name" autocomplete="off" placeholder="请输入用户名" />
+    <el-form :model="searchForm" :inline="true" ref="searchFormRef">
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="searchForm.name" autocomplete="off" placeholder="请输入用户名" />
       </el-form-item>
-      <el-form-item label="联系电话">
-        <el-input v-model="form.name" autocomplete="off" placeholder="请输入用户名" />
+      <el-form-item label="联系电话" prop="phone">
+        <el-input v-model="searchForm.phone" autocomplete="off" placeholder="请输入手机号码" />
+      </el-form-item>
+      <el-form-item>
+        <el-button :icon="Search" type="primary" @click="getUser">搜索</el-button>
+        <el-button :icon="Refresh" @click="searchFormRef.resetFields()">重置</el-button>
       </el-form-item>
     </el-form>
+
+    <el-divider class="divider" />
     <el-button type="primary" @click="dialogFormVisibleAdd = true" class="addButton">新增用户</el-button>
     <el-table :data="tableData" text-align="center" stripe border :v-loading="tableLoading" @sort-change="sortChange">
       <el-table-column type="selection" width="55" />
@@ -28,14 +33,12 @@
       <el-table-column prop="createTime" label="注册时间" min-width="85px" sortable />
       <el-table-column label="操作" width="170" align="center">
         <template #default="scope">
-          <!-- <el-button size="small" @click="handleEdit(scope.row)">cha</el-button> -->
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-      :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
-
+      <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
+        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" title="新增用户" width="500px" :close-on-click-modal="false" draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addUser(formRef)" ref="formRef">
         <el-form-item label="登录名" label-width="100px" prop="name">
@@ -55,11 +58,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, getCurrentScope, onBeforeMount, ref, onMounted, toRef, } from "vue";
+import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { ArrowLeft, ArrowRight, Delete, Edit, Share, } from '@element-plus/icons-vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;
-
 
 const tableData = ref([]);
 const tableLoading = ref(false);
@@ -69,12 +71,21 @@ const currentPage = ref(1);
 const dialogFormVisibleAdd = ref(false);
 const orderField = ref("name");
 const orderDirection = ref("descending");
-const searchForm = ref();
+
+
 const form = ref({
   name: "",
   password: "",
 });
+
+const searchForm = ref({
+  name: "",
+  phone: "",
+});
+
 const formRef = ref();
+const searchFormRef = ref();
+
 const rules = ref({
   name: [{
     required: true, message: "姓名不能为空", trigger: "blur"
@@ -83,6 +94,10 @@ const rules = ref({
     required: true, message: "密码不能为空", trigger: "blur"
   }],
 });
+
+const search = (formEl: any) => {
+  console.log(formEl)
+}
 
 const sortChange = (column: any) => {
   orderField.value = column.prop;
@@ -164,6 +179,8 @@ function getUser() {
   params.append("currentPage", String(currentPage.value));
   params.append("orderField", String(orderField.value));
   params.append("orderDirection", String(orderDirection.value));
+  params.append("name", String(searchForm.value.name));
+  params.append("phone", String(searchForm.value.phone));
   proxy.$http.post("user/getAllUser", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
@@ -172,8 +189,8 @@ function getUser() {
   });
 }
 
-async function addUser(formSubmit: any) {
-  await formSubmit.validate((valid: any) => {
+function addUser(formSubmit: any) {
+  formSubmit.validate((valid: any) => {
     if (valid) {
       let value = form.value;
       let params = new URLSearchParams();
@@ -202,8 +219,16 @@ onMounted(() => {
   getUser();
 });
 </script>
-<style scoped>
+<style scoped >
 .addButton {
   margin-bottom: 10px;
+}
+.pageTop{
+  margin-top: 20px;
+}
+
+.divider {
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 </style>

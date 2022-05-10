@@ -1,18 +1,14 @@
 <template>
-
   <div class="common-layout">
     <el-container>
       <el-aside width="380">
-        <userInfoCard :form="form" />
+        <userInfoCard :msg="formCard" />
       </el-aside>
       <el-main>
-        <el-tabs v-model="activeName" class="demo-tabs">
+        <el-tabs v-model="activeName">
           <el-tab-pane label="基本资料" name="first">
             <el-form :model="form" :rules="rules" ref="formRef">
-              <!-- <el-form-item label="登录名" label-width="100px" prop="name">
-                <el-input v-model="form.name" autocomplete="off" placeholder="请输入用户名" />
-              </el-form-item> -->
-              <el-form-item label="用户昵称" label-width="100px" prop="name">
+              <el-form-item label="用户名称" label-width="100px" prop="name">
                 <el-input v-model="form.name" />
               </el-form-item>
               <el-form-item label="手机号码" label-width="100px" prop="phone">
@@ -43,12 +39,13 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import userInfoCard from '@/components/user/userInfoCard.vue'
 import userInfoPassword from '@/components/user/userInfoPassword.vue'
 import { useStore } from "vuex";
+
 const { proxy } = getCurrentInstance() as any;
 const store = useStore();
 
 const activeName = ref('first');
 const form = ref({
-  id: "148f0368-f26d-4540-a0f8-54de8f6470bc",
+  id: "",
   name: "",
   password: "",
   email: "",
@@ -56,6 +53,7 @@ const form = ref({
   phone: "",
 });
 
+let formCard = ref({});
 const formRef = ref();
 const rules = ref({
   name: [{
@@ -75,7 +73,8 @@ const updateUser = (formSubmit: any) => {
       let value = form.value;
       let params = new URLSearchParams();
       params.append("name", value.name);
-      params.append("id", "148f0368-f26d-4540-a0f8-54de8f6470bc");
+      params.append("id", store.state.userId);
+      console.log("id", store.state.userId)
       params.append("email", value.email);
       params.append("phone", value.phone);
       params.append("sex", value.sex);
@@ -97,12 +96,13 @@ const updateUser = (formSubmit: any) => {
 
 function getUserById() {
   let params = new URLSearchParams();
-  params.append("id", store.getters.getUserId)
+  params.append("id", String(window.localStorage.getItem('userId')));
+  console.log("id", store.state.userId)
   proxy.$http.post("user/getUserById", params).then((res: any) => {
     if (res.data.code == 200) {
       form.value = res.data.data;
+      formCard.value = form.value;
     }
-
     console.log(res.data.data);
   });
 }

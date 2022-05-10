@@ -1,9 +1,21 @@
 <template>
   <div>
-    <el-checkbox-group v-model="checkList" @change="handleCheckList">
-      <el-checkbox :label="item.name" v-for="item of checkListValue" :key="item.name" border></el-checkbox>
-    </el-checkbox-group>
+    <el-form :model="searchForm" :inline="true" ref="searchFormRef">
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="searchForm.name" autocomplete="off" placeholder="请输入用户名" />
+      </el-form-item>
+      <el-form-item>
+        <el-button :icon="Search" type="primary" @click="getUserAndRole">搜索</el-button>
+        <el-button :icon="Refresh" @click="reset(searchFormRef)">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <div class="checkBox">
+      <div>勾选以选择查看授权</div>
+      <el-checkbox-group v-model="checkList" @change="handleCheckList">
+        <el-checkbox :label="item.name" v-for="item of checkListValue" :key="item.name" border></el-checkbox>
+      </el-checkbox-group>
 
+    </div>
     <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column type="selection" />
       <el-table-column prop="id" label="用户编号" v-if="false" />
@@ -16,17 +28,22 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-      :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
+    <div class="pageTop">
+      <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
+        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Check, Close } from '@element-plus/icons-vue'
+import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance() as any;
-
+const searchForm = ref({
+  name: ""
+});
+const searchFormRef = ref();
 const total = ref(0);
 const tableData = ref([]);
 const pageSize = ref(5);
@@ -37,6 +54,12 @@ let CheckRow = ref([]);
 let tableDataCopy: any;
 let checkListValueCopy: any;
 
+const reset = (formEl: any) => {
+  if (!formEl) {
+    return
+  }
+  formEl.resetFields();
+}
 const buttonClick = (roleName: string, userId: string) => {
   let roleId;
   for (let entity of checkListValueCopy) {
@@ -94,7 +117,7 @@ async function getUserAndRole() {
   let params = new URLSearchParams();
   params.append("pageSize", String(pageSize.value));
   params.append("currentPage", String(currentPage.value));
-
+  params.append("name", searchForm.value.name);
   await proxy.$http.post("userAndRole/getAllUserAndRole", params).then((res: any) => {
     tableDataCopy = res.data.data.content;
     console.log(tableDataCopy)
@@ -106,13 +129,25 @@ async function getUserAndRole() {
 }
 
 onMounted(() => {
-  proxy.$http.post("role/getAllRole").then((res: any) => {
-    checkListValue.value = res.data.data.content;
-    checkListValueCopy = res.data.data.content;
+  proxy.$http.post("role/getAllRoleCheckBox").then((res: any) => {
+    checkListValue.value = res.data.data;
+    checkListValueCopy = res.data.data;
   });
   getUserAndRole();
 });
 
 </script>
 <style scoped>
+.checkBox {
+  margin-bottom: 15px;
+}
+
+.checkBox>div {
+  display: inline;
+  margin-right: 10px;
+}
+
+.pageTop {
+  margin-top: 20px;
+}
 </style>

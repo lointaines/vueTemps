@@ -86,16 +86,15 @@ const handleDetail = function (row: any) {
 
 async function getItemImgByItemId() {
     let params = new URLSearchParams();
-    params.append("id", String(itemId.value.id));
+    params.append("itemId", String(itemId.value.id));
     params.append("pageSize", String(pageSize.value));
     params.append("currentPage", String(currentPage.value));
     params.append("orderField", String(orderField.value));
     params.append("orderDirection", String(orderDirection.value));
 
-    await proxy.$http.post("item/getItemImgById", params).then((res: any) => {
+    await proxy.$http.post("itemImg/getItemImgByItemId", params).then((res: any) => {
         tableData.value = res.data.data.content;
         total.value = res.data.data.totalElements;
-        console.log(res.data.data.content)
     });
 }
 

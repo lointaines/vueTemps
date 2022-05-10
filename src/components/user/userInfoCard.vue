@@ -8,10 +8,10 @@
       </template>
       <div class="text ">
         <div class="headBackground">
-          <el-upload :action="headAction" :on-success="handleAvatarSuccess" :show-file-list="false"
+          <el-upload action="" :on-success="handleAvatarSuccess" :show-file-list="false"
             :before-upload="beforeAvatarUpload" :on-error="handleAvatarError" accept=".jpg, .png, .jpeg">
-            <img v-if="headSrc" :src="headSrc" class="avatar" />
-            <el-avatar v-else :icon="User" class="head" :size="120" :src="headSrc" />
+            <img v-if="headSrc" :src="headSrc" />
+            <el-avatar v-else :icon="User" class="head" :size="120" />
             <template #tip>
               <div class="el-upload__tip">
                 点击更换头像
@@ -29,7 +29,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight"> {{ props.form.name }}</div>
+            <div class="alignRight"> {{ props.msg.name }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -42,7 +42,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight">{{ props.form.phone }}</div>
+            <div class="alignRight">{{ props.msg.phone }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -55,7 +55,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight"> {{ props.form.email }}</div>
+            <div class="alignRight"> {{ props.msg.email }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -68,7 +68,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight">{{ props.form.role }}</div>
+            <div class="alignRight">{{ props.msg.role }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -81,7 +81,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight">{{ props.form.createTime }}</div>
+            <div class="alignRight">{{ props.msg.createTime }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -90,22 +90,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, getCurrentScope, onBeforeMount, ref, onMounted, toRef, defineProps } from "vue";
+import { getCurrentInstance, ref, onUpdated, defineProps } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { ArrowLeft, ArrowRight, Delete, Edit, Share, User, Avatar, Iphone, Message, Calendar, Postcard } from '@element-plus/icons-vue'
-import { stringify } from "querystring";
+import {User,  Iphone, Message, Calendar, Postcard } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;
 const props = defineProps({
-  form: {
-    type:Object,
-    default:{
-
+  msg: {
+    type: Object,
+    default: {
     }
   }
 });
-const form = props.form;
 const headSrc = ref();
-const headAction = ref("");
+
 const beforeAvatarUpload = (rawFile: any) => {
   if (!(rawFile.type == 'image/jpeg' || rawFile.type == 'image/png')) {
     ElMessage.error('图片格式必须是jpeg或png');
@@ -123,22 +120,42 @@ const handleAvatarError = () => {
 const handleAvatarSuccess = () => {
   getUserHead();
 }
-
-const getUserHead = () => {
-  let params = new URLSearchParams();
-  params.append("id", props.form.id);
+const headAction = () => {
+  let formData = new FormData();
+  formData.append("id", props.msg.id);
   proxy.$http
-    .post("user/getUserHeadById", params)
+    .post("user/updateUserHeadById", formData)
     .then((res: any) => {
       let result = res.data;
       if (result.code == 200) {
-        // ElMessage.success("修改信息成功");
+        console.log(result)
       } else {
         ElMessage.error("获取头像失败");
       }
     });
+};
+
+const getUserHead = () => {
+  let params = new URLSearchParams();
+  console.log(props.msg.id);
+  if (props.msg.id) {
+    console.log(props.msg)
+    params.append("id", props.msg.id);
+    proxy.$http
+      .post("user/getUserHeadById", params)
+      .then((res: any) => {
+        let result = res.data;
+        if (result.code == 200) {
+          console.log(result)
+        } else {
+          ElMessage.error("获取头像失败");
+        }
+      });
+  } else {
+    ElMessage.error("id null");
+  }
 }
-onMounted(() => {
+onUpdated(() => {
   getUserHead();
 });
 </script>
@@ -163,8 +180,6 @@ onMounted(() => {
 
 .headBackground {
   text-align: center;
-  /* padding-right: 10px; */
-  /* background-color: red; */
 }
 
 .head {

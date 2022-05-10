@@ -13,7 +13,7 @@
           <el-option :label="item.name" v-for="item in itemType" :value="item.id" :key="item.name" />
         </el-select>
       </el-form-item>
-      <el-form-item label="起源时间">
+      <el-form-item label="起源时间" prop="date">
         <el-date-picker v-model="form.creatTime" type="date" placeholder="请选择起源时间" style="width: 100%" />
       </el-form-item>
       <el-form-item label="相关资料">

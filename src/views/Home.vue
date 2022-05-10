@@ -4,15 +4,15 @@
     <el-header>
       <div>资源信息系统</div>
       <div class="toolbar">
-        <el-dropdown>
+        <el-dropdown @command="handleCommand">
           <el-icon style="margin-right: 10px">
             <setting color="white" />
           </el-icon>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>个人信息</el-dropdown-item>
-              <el-dropdown-item>设置</el-dropdown-item>
-              <el-dropdown-item>登出</el-dropdown-item>
+              <el-dropdown-item command="userInfo">个人信息</el-dropdown-item>
+              <el-dropdown-item command="set" divided>设置</el-dropdown-item>
+              <el-dropdown-item command="logout" divided>登出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -64,10 +64,40 @@
 <script lang="ts" setup>
 import { getCurrentInstance, getCurrentScope, onBeforeMount, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
+const router = useRouter();
+const store = useStore();
 const { proxy } = getCurrentInstance() as any;
+const handleCommand = (command: string) => {
+  console.log(command)
+  switch (command) {
+    
+    case 'userInfo':
+      gotoUserInfo();
+      break;
+    case 'set':
+      gotoSet();
+      break;
+    case 'logout':
+      gotoLogout();
+      break;
+    default:
+  }
+}
 
+const gotoUserInfo = () => {
+  router.push("/userInfo");
+}
 
+const gotoSet = () => {
+
+}
+const gotoLogout = () => {
+  window.localStorage.removeItem('userId');
+  router.push("/login");
+}
 </script>
 
 <style scoped lang="scss">

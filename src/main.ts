@@ -5,7 +5,7 @@ import store from './store'
 import ElementPlus from 'element-plus'
 import axios from 'axios'
 import 'element-plus/dist/index.css'
-
+import { zhCn } from 'element-plus/lib/locale'
 const app = createApp(App);
 
 axios.defaults.baseURL = '/api'
@@ -16,4 +16,6 @@ router.beforeEach((to,from,next)=>{
     }
     next();
 })
-app.use(store).use(router).use(ElementPlus).mount('#app')
+app.use(store).use(router).use(ElementPlus,{
+    locale:zhCn
+}).mount('#app')

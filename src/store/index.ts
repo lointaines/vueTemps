@@ -2,16 +2,14 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    userId: "",
-  },
-  getters: {
-    getUserId(state) {
-      return state.userId;
-    }
+    userId: window.localStorage.getItem('userId'),
   },
   mutations: {
     setUserId(state: any, userId: any) {
-      state.userId = userId;
+      
+    },
+    removeUserId(state: any) {
+     
     }
   },
   actions: {

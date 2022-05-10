@@ -13,18 +13,18 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
+    <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
       :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" :title="addOrUpdateTitle" width="500px" :close-on-click-modal="false"
       draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addOrUpdateItemType(formRef)" ref="formRef">
-        <el-form-item label="资源id" label-width="100px" prop="name" v-if="false">
+        <el-form-item label="资源id" label-width="100px" prop="id" v-if="false">
           <el-input v-model="form.id" autocomplete="off" placeholder="请输入资源类别" />
         </el-form-item>
         <el-form-item label="资源类别" label-width="100px" prop="name">
           <el-input v-model="form.name" autocomplete="off" placeholder="请输入资源类别" />
         </el-form-item>
-        <el-form-item label="资源简述" label-width="100px">
+        <el-form-item label="资源简述" label-width="100px" prop="description">
           <el-input type="textarea" autosize v-model="form.description" placeholder="请输入资源简述" />
         </el-form-item>
       </el-form>
@@ -40,7 +40,6 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Check, Close } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance() as any;
 
@@ -52,9 +51,7 @@ const orderField = ref("name");
 const orderDirection = ref("descending");
 const dialogFormVisibleAdd = ref(false);
 const addOrUpdateTitle = ref("新增资源类别");
-const itemTypeTip = ref({
-  name: '',
-})
+
 const form = ref({
   id: "",
   name: "",
@@ -67,11 +64,6 @@ const rules = ref({
   }],
 });
 
-const sortChange = (column: any) => {
-  orderField.value = column.prop;
-  orderDirection.value = column.order;
-  getItemType();
-}
 const handleSizeChange = function (val: number) {
   pageSize.value = val;
   getItemType();
@@ -97,7 +89,7 @@ const handleDelete = function (row: any) {
           ElMessage.success("删除成功");
           getItemType();
         } else {
-          ElMessage.error("删除失败");
+          ElMessage.error("删除失败,该资源类别仍存在资源");
         }
       });
     })
@@ -106,34 +98,27 @@ const handleDelete = function (row: any) {
     });;
 };
 
-const handleDetail = function (row: any) {
-};
-
 const handleEdit = function (row: any) {
-  itemTypeTip.value.name = row.name;
   dialogFormVisibleAdd.value = true;
   addOrUpdateTitle.value = "修改资源类别";
-  fromReset();
   form.value.id = row.id;
+  form.value.name = row.name;
+  form.value.description = row.description;
 };
 
 const handleAdd = function (row: any) {
   dialogFormVisibleAdd.value = true;
   addOrUpdateTitle.value = "新增资源类别";
-  fromReset();
-  form.value.id = '';
-};
-
-const fromReset = () => {
+  form.value.id = ''; 
   form.value.name = '';
   form.value.description = '';
-}
+};
 
-async function getItemType() {
+function getItemType() {
   let params = new URLSearchParams();
   params.append("pageSize", String(pageSize.value));
   params.append("currentPage", String(currentPage.value));
-  await proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {
+  proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {
     tableData.value = res.data.data.content;
     total.value = res.data.data.totalElements;
   });
@@ -171,4 +156,11 @@ onMounted(() => {
 
 </script>
 <style scoped>
+
+.addButton {
+  margin-bottom: 10px;
+}
+.pageTop{
+  margin-top: 20px;
+}
 </style>

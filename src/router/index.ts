@@ -6,7 +6,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: Home,
-    redirect: '/userManage',
+    redirect: '/login',
     meta: {
       title: "西藏文化"
     },

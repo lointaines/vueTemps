@@ -18,8 +18,13 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance, reactive, getCurrentScope, onBeforeMount, ref, onMounted, toRef, } from "vue";
+import { getCurrentInstance, reactive, getCurrentScope, onBeforeMount, defineProps, ref, onMounted, toRef, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+const store = useStore();
+const router = useRouter();
 const { proxy } = getCurrentInstance() as any;
 const passWordFormRef = ref();
 const passwordForm = ref({
@@ -54,7 +59,8 @@ const updatePassword = (formSubmit: any) => {
     if (valid) {
       let value = passwordForm.value;
       let params = new URLSearchParams();
-      params.append("id", "148f0368-f26d-4540-a0f8-54de8f6470bc");
+      params.append("id", store.state.userId);
+      
       params.append("originalPassword", value.originalPassword);
       params.append("password", value.password);
       proxy.$http
@@ -62,9 +68,12 @@ const updatePassword = (formSubmit: any) => {
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
-            ElMessage.success("修改信息成功");
+            ElMessage.success("修改密码成功");
+            store.commit("removeUserId");
+            router.push("/login");
+
           } else {
-            ElMessage.error("修改信息失败");
+            ElMessage.error("原密码错误");
           }
         });
     } else {

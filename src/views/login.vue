@@ -53,8 +53,9 @@ const submitForm = async (formEl: any) => {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success("登录成功");
-            store.commit('setUserId', result.data);
-            router.push("/")
+            console.log(result.data)
+           window.localStorage.setItem('userId', result.data);
+            router.push("/userInfo")
           } else {
             ElMessage.error(result.msg);
           }
@@ -89,7 +90,7 @@ const resetForm = async (formEl: any) => {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background-image: url('../assets/无标题_4x.png');
+  background-image: url('../assets/image/background.png');
   background-size: 100% 100%;
 }
 
@@ -101,7 +102,7 @@ const resetForm = async (formEl: any) => {
   width: 300px;
   height: 300px;
   /* filter: blur(1px); */
-  background-color: #a0cfff;
+  background-color: #a0cfff77;
 }
 
 .loginTitle {
