@@ -34,7 +34,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, reactive, getCurrentScope, onBeforeMount, ref, onMounted, toRef, } from "vue";
+import { getCurrentInstance, ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import userInfoCard from '@/components/user/userInfoCard.vue'
 import userInfoPassword from '@/components/user/userInfoPassword.vue'
@@ -53,7 +53,13 @@ const form = ref({
   phone: "",
 });
 
-let formCard = ref({});
+const formCard = ref({
+  name: "",
+  email: "",
+  sex: "",
+  phone: "", 
+  createTime: ""
+});
 const formRef = ref();
 const rules = ref({
   name: [{
@@ -84,6 +90,7 @@ const updateUser = (formSubmit: any) => {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success("修改信息成功");
+            location. reload();
           } else {
             ElMessage.error("修改信息失败");
           }
@@ -101,9 +108,12 @@ function getUserById() {
   proxy.$http.post("user/getUserById", params).then((res: any) => {
     if (res.data.code == 200) {
       form.value = res.data.data;
-      formCard.value = form.value;
+      let data = res.data.data;
+      formCard.value.name = data.name;
+      formCard.value.phone = data.phone;
+      formCard.value.email = data.email;
+      formCard.value.createTime = data.createTime;
     }
-    console.log(res.data.data);
   });
 }
 

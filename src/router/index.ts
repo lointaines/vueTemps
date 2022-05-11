@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/userManage',
         name: 'userManage',
         component: () => import('@/views/user/userManage.vue'),
-      },{
+      }, {
         path: '/userInfo',
         name: 'userInfo',
         component: () => import('@/views/user/userInfo.vue')
@@ -44,10 +44,18 @@ const routes: Array<RouteRecordRaw> = [
         path: '/itemTypeManage',
         name: 'itemTypeManage',
         component: () => import('@/views/item/itemTypeManage.vue'),
-      },{
+      }, {
         path: '/itemDetail',
         name: 'itemDetail',
         component: () => import('@/views/item/itemDetail.vue')
+      }, {
+        path: '/permissionManage',
+        name: 'permissionManage',
+        component: () => import('@/views/security/permissionManage.vue')
+      }, {
+        path: '/roleAndPermission',
+        name: 'roleAndPermission',
+        component: () => import('@/views/security/roleAndPermission.vue')
       },
     ]
   },
@@ -56,7 +64,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: () => import('@/views/login.vue')
   },
-  
+
 
   {
     path: '/:catchAll(.*)',

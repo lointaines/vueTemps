@@ -29,7 +29,7 @@
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="alignRight"> {{ props.msg.name }}</div>
+            <div class="alignRight" @click="h"> {{ props.msg.name }}</div>
           </el-col>
         </el-row>
         <el-divider class="divider" />
@@ -102,7 +102,9 @@ const props = defineProps({
   }
 });
 const headSrc = ref();
-
+function h(){
+  console.log(props.msg.name)
+}
 const beforeAvatarUpload = (rawFile: any) => {
   if (!(rawFile.type == 'image/jpeg' || rawFile.type == 'image/png')) {
     ElMessage.error('图片格式必须是jpeg或png');
@@ -138,6 +140,7 @@ const headAction = () => {
 const getUserHead = () => {
   let params = new URLSearchParams();
   console.log(props.msg.id);
+  console.log(props.msg.name);
   if (props.msg.id) {
     console.log(props.msg)
     params.append("id", props.msg.id);

@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item>
         <el-button :icon="Search" type="primary" @click="getUserAndRole">搜索</el-button>
-        <el-button :icon="Refresh" @click="reset(searchFormRef)">重置</el-button>
+        <el-button :icon="Refresh" @click="searchFormRef.resetFields()">重置</el-button>
       </el-form-item>
     </el-form>
     <div class="checkBox">
@@ -54,12 +54,6 @@ let CheckRow = ref([]);
 let tableDataCopy: any;
 let checkListValueCopy: any;
 
-const reset = (formEl: any) => {
-  if (!formEl) {
-    return
-  }
-  formEl.resetFields();
-}
 const buttonClick = (roleName: string, userId: string) => {
   let roleId;
   for (let entity of checkListValueCopy) {

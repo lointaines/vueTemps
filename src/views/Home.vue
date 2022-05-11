@@ -2,22 +2,8 @@
   <el-container>
     <!-- 顶部 -->
     <el-header>
-      <div>资源信息系统</div>
-      <div class="toolbar">
-        <el-dropdown @command="handleCommand">
-          <el-icon style="margin-right: 10px">
-            <setting color="white" />
-          </el-icon>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="userInfo">个人信息</el-dropdown-item>
-              <el-dropdown-item command="set" divided>设置</el-dropdown-item>
-              <el-dropdown-item command="logout" divided>登出</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <span style="margin-top: 4px">User</span>
-      </div>
+      <div class="headerP">  <homeHeader></homeHeader></div>
+    
     </el-header>
     <el-container>
       <!-- 侧边栏 -->
@@ -51,6 +37,18 @@
                 <el-menu-item index="/itemTypeManage">资源类别管理</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
+              <el-sub-menu index="3">
+              <template #title>
+                <el-icon>
+                  <icon-menu />
+                </el-icon>
+                <span>安全管理</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="/permissionManage">权限管理</el-menu-item>
+                <el-menu-item index="/roleAndPermission">授予权限</el-menu-item>
+              </el-menu-item-group>
+            </el-sub-menu>
           </el-menu>
         </el-scrollbar>
       </el-aside>
@@ -62,68 +60,20 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance, getCurrentScope, onBeforeMount, ref } from "vue";
-import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
-
-const router = useRouter();
-const store = useStore();
-const { proxy } = getCurrentInstance() as any;
-const handleCommand = (command: string) => {
-  console.log(command)
-  switch (command) {
-    
-    case 'userInfo':
-      gotoUserInfo();
-      break;
-    case 'set':
-      gotoSet();
-      break;
-    case 'logout':
-      gotoLogout();
-      break;
-    default:
-  }
-}
-
-const gotoUserInfo = () => {
-  router.push("/userInfo");
-}
-
-const gotoSet = () => {
-
-}
-const gotoLogout = () => {
-  window.localStorage.removeItem('userId');
-  router.push("/login");
-}
+import homeHeader from "@/components/homeHeader.vue"
 </script>
 
 <style scoped lang="scss">
 .el-aside .el-menu {
   background-color: rgb(217, 236, 255);
   height: 100vh;
+  overflow:auto
 }
-
-.el-header {
-  text-align: right;
-  font-size: 13px;
-  background-color: rgb(84, 92, 100);
-  color: #fff;
-}
-
-.el-header>div:first-child {
-  float: left;
+.headerP{
   height: 100%;
-  margin-top: 15px;
-  margin-left: 10px;
-  font-size: 20px;
 }
 
-.toolbar {
-  vertical-align: center;
-  margin-top: 20px;
-  margin-left: 10px;
+.el-header{
+  padding: 0px;
 }
 </style>
