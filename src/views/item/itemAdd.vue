@@ -14,7 +14,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="起源时间" prop="date">
-        <el-date-picker v-model="form.creatTime" type="date" placeholder="请选择起源时间" style="width: 100%" />
+        <el-date-picker v-model="form.createTime" type="date" placeholder="请选择起源时间" style="width: 100%" />
       </el-form-item>
       <el-form-item label="相关资料">
         <el-upload action="" ref="imgUpload" multiple :limit="3" :file-list="fileList" :on-change="handleChange"
@@ -27,7 +27,6 @@
           <el-button type="primary">点击上传文件</el-button>
         </el-upload>
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" @click="addItem(formRef)">新增资源</el-button>
       </el-form-item>
@@ -45,7 +44,7 @@ const form = ref({
   name: "",
   state: "",
   type: "",
-  creatTime: ""
+  createTime: ""
 });
 const formRef = ref();
 const rules = ref({
@@ -62,12 +61,9 @@ const handleChange = () => {
   console.log(fileList);
   let formData = new FormData();
   fileList.forEach((element: any) => {
-    console.log(element)
     formData.append("picture", element.raw)
   });
 }
-
-
 
 async function addItem(formSubmit: any) {
   await formSubmit.validate((valid: any) => {
@@ -79,6 +75,7 @@ async function addItem(formSubmit: any) {
       });
       formData.append("name", value.name);
       formData.append("type", value.type);
+      formData.append("originalTime",value.createTime);
       proxy.$http
         .post("item/addItem", formData)
         .then((res: any) => {

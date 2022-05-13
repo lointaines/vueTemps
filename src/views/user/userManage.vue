@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <el-form :model="searchForm" :inline="true" ref="searchFormRef">
       <el-form-item label="姓名" prop="name">
         <el-input v-model="searchForm.name" autocomplete="off" placeholder="请输入用户名" />
@@ -45,7 +46,7 @@
           <el-input v-model="form.name" autocomplete="off" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" label-width="100px" prop="password">
-          <el-input v-model="form.password" placeholder="请输入登录密码" />
+          <el-input v-model="form.password" placeholder="请输入登录密码" type="password" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -95,10 +96,6 @@ const rules = ref({
   }],
 });
 
-const search = (formEl: any) => {
-  console.log(formEl)
-}
-
 const sortChange = (column: any) => {
   orderField.value = column.prop;
   orderDirection.value = column.order;
@@ -119,7 +116,7 @@ const stateChange = (row: any) => {
       params.append("state", String(row.state));
       console.log(row.id, row.state)
       proxy.$http
-        .post("user/updateUserById", params)
+        .post("user/updateUserStateById", params)
         .then((res: any) => {
           let result = res.data;
           console.log(result)

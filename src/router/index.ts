@@ -12,6 +12,11 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
+        path: '/cropperImage',
+        name: 'cropperImage',
+        component: () => import('@/components/cropperImage.vue'),
+      },
+      {
         path: '/userManage',
         name: 'userManage',
         component: () => import('@/views/user/userManage.vue'),

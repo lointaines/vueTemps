@@ -13,8 +13,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-      :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
+    <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
+      layout="sizes, prev, pager, next, jumper, total" :total="total" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange" :page-size="pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" :title="addOrUpdateTitle" width="500px" :close-on-click-modal="false"
       draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addOrUpdateItemType(formRef)" ref="formRef">
@@ -109,7 +110,7 @@ const handleEdit = function (row: any) {
 const handleAdd = function (row: any) {
   dialogFormVisibleAdd.value = true;
   addOrUpdateTitle.value = "新增资源类别";
-  form.value.id = ''; 
+  form.value.id = '';
   form.value.name = '';
   form.value.description = '';
 };
@@ -138,7 +139,7 @@ async function addOrUpdateItemType(formSubmit: any) {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success(addOrUpdateTitle.value + "成功");
-            dialogFormVisibleAdd.value = false
+            dialogFormVisibleAdd.value = false;
             getItemType();
           } else {
             ElMessage.error(addOrUpdateTitle.value + "类别失败,资源类别名重复");
@@ -156,11 +157,11 @@ onMounted(() => {
 
 </script>
 <style scoped>
-
 .addButton {
   margin-bottom: 10px;
 }
-.pageTop{
+
+.pageTop {
   margin-top: 20px;
 }
 </style>

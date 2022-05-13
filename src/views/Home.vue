@@ -45,7 +45,7 @@
                 <span>安全管理</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="/permissionManage">权限管理</el-menu-item>
+                <el-menu-item index="/permissionManage">权限查看</el-menu-item>
                 <el-menu-item index="/roleAndPermission">授予权限</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
@@ -61,6 +61,7 @@
 
 <script lang="ts" setup>
 import homeHeader from "@/components/homeHeader.vue"
+import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 </script>
 
 <style scoped lang="scss">

@@ -59,7 +59,7 @@ const updatePassword = (formSubmit: any) => {
     if (valid) {
       let value = passwordForm.value;
       let params = new URLSearchParams();
-      params.append("id", store.state.userId);
+      params.append("id", String(window.localStorage.getItem('userId')));
       
       params.append("originalPassword", value.originalPassword);
       params.append("password", value.password);

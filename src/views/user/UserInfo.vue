@@ -54,10 +54,11 @@ const form = ref({
 });
 
 const formCard = ref({
+  id:"",
   name: "",
   email: "",
   sex: "",
-  phone: "", 
+  phone: "",
   createTime: ""
 });
 const formRef = ref();
@@ -79,8 +80,7 @@ const updateUser = (formSubmit: any) => {
       let value = form.value;
       let params = new URLSearchParams();
       params.append("name", value.name);
-      params.append("id", store.state.userId);
-      console.log("id", store.state.userId)
+      params.append("id", String(window.localStorage.getItem('userId')));
       params.append("email", value.email);
       params.append("phone", value.phone);
       params.append("sex", value.sex);
@@ -90,7 +90,7 @@ const updateUser = (formSubmit: any) => {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success("修改信息成功");
-            location. reload();
+            location.reload();
           } else {
             ElMessage.error("修改信息失败");
           }
@@ -104,11 +104,11 @@ const updateUser = (formSubmit: any) => {
 function getUserById() {
   let params = new URLSearchParams();
   params.append("id", String(window.localStorage.getItem('userId')));
-  console.log("id", store.state.userId)
   proxy.$http.post("user/getUserById", params).then((res: any) => {
     if (res.data.code == 200) {
       form.value = res.data.data;
       let data = res.data.data;
+      formCard.value.id = data.id;
       formCard.value.name = data.name;
       formCard.value.phone = data.phone;
       formCard.value.email = data.email;

@@ -2,7 +2,7 @@
   <div>
     <div class="checkBox">
       <div>勾选以选择查看授权</div>
-      <el-checkbox-group v-model="checkList" @change="handleCheckList">
+      <el-checkbox-group v-model="checkList" @change="handleCheckList" :max="5">
         <el-checkbox :label="item.name" v-for="item of checkListValue" :key="item.name" border></el-checkbox>
       </el-checkbox-group>
 
@@ -67,7 +67,7 @@ const buttonIcon = (permissionName: string, roleId: string) => {
 };
 
 const successOrFailedMatch = (permissionName: string, roleId: string) => {
-  for (let entity of tableDataCopy) {   
+  for (let entity of tableDataCopy) {
     if (entity.roleId === roleId && entity.permissionName === permissionName) {
       return true;
     }
@@ -103,10 +103,7 @@ onMounted(() => {
   margin-bottom: 15px;
 }
 
-.checkBox>div {
-  display: inline;
-  margin-right: 10px;
-}
+
 
 .pageTop {
   margin-top: 20px;

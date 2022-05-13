@@ -12,37 +12,27 @@
         <el-button :icon="Refresh" @click="searchFormRef.resetFields()">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-button type="primary" @click="dialogFormVisibleAdd = true" class="addButton">新增角色</el-button>
-    <el-table :data="tableData" text-align="center" stripe border @cell-dblclick="editData">
+    <el-button type="primary" @click="handleAdd" class="addButton">新增角色</el-button>
+    <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="角色编号" width="140" v-if="false" />
-      <el-table-column prop="name" label="角色名称">
-        <template #default="scope">
-          <span v-if="!scope.row.isSet">{{ scope.row.name }}</span>
-          <span v-else>
-            <el-input v-model="scope.row.name"></el-input>
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="description" label="角色描述">
-        <template #default="scope">
-          <span v-if="!scope.row.isSet">{{ scope.row.description }}</span>
-          <span v-else>
-            <el-input v-model="scope.row.description"></el-input>
-          </span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="name" label="角色名称" />
+      <el-table-column prop="description" label="角色描述" />
       <el-table-column label="操作" width="170" align="center">
         <template #default="scope">
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <div v-if="(scope.row.name != 'admin') && (scope.row.name != 'user')">
+            <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
       layout="sizes, prev, pager, next, jumper, total" :total="total" @size-change="handleSizeChange"
       @current-change="handleCurrentChange" :page-size="pageSize" />
-    <el-dialog v-model="dialogFormVisibleAdd" title="新增角色" width="500px" :close-on-click-modal="false" draggable>
-      <el-form :model="form" :rules="rules" @keyup.enter="addRole(formRef)" ref="formRef">
+    <el-dialog v-model="dialogFormVisibleAdd" :title="addOrUpdateTitle" width="500px" :close-on-click-modal="false"
+      draggable>
+      <el-form :model="form" :rules="rules" @keyup.enter="addOrUpdateRole(formRef)" ref="formRef">
         <el-form-item label="角色名称" label-width="100px" prop="name">
           <el-input v-model="form.name" autocomplete="off" placeholder="请输入角色名" />
         </el-form-item>
@@ -53,7 +43,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisibleAdd = false">取消</el-button>
-          <el-button type="primary" @click="addRole(formRef)">新增角色</el-button>
+          <el-button type="primary" @click="addOrUpdateRole(formRef)">{{ addOrUpdateTitle }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -70,13 +60,16 @@ const tableData = ref([]);
 const pageSize = ref(5);
 const currentPage = ref(1);
 const dialogFormVisibleAdd = ref(false);
+const addOrUpdateTitle = ref("新增资源类别");
 
 const searchForm = ref({
+
   name: "",
   description: ""
 });
 const searchFormRef = ref();
 const form = ref({
+  id: "",
   name: "",
   description: "",
 });
@@ -86,10 +79,7 @@ const rules = ref({
     required: true, message: "名称不能为空", trigger: "blur"
   }],
 });
-const editData = (row: any, column: any, cell: any, event: any) => {
-  console.log(row); console.log(column);  console.log(row.isSet)
-  row.isSet = false;
-}
+
 const handleDelete = (row: any) => {
   ElMessageBox.confirm("是否删除名称为" + row.name + "的角色？", "警告", {
     confirmButtonText: "确认",
@@ -116,6 +106,22 @@ const handleDelete = (row: any) => {
     });
 };
 
+const handleEdit = function (row: any) {
+  dialogFormVisibleAdd.value = true;
+  addOrUpdateTitle.value = "修改角色类别";
+  form.value.id = row.id;
+  form.value.name = row.name;
+  form.value.description = row.description;
+};
+
+const handleAdd = function (row: any) {
+  dialogFormVisibleAdd.value = true;
+  addOrUpdateTitle.value = "新增角色类别";
+  form.value.id = '';
+  form.value.name = '';
+  form.value.description = '';
+};
+
 const handleSizeChange = function (val: number) {
   pageSize.value = val;
   getRole();
@@ -139,24 +145,24 @@ function getRole() {
   });
 }
 
-function addRole(formSubmit: any) {
-  formSubmit.validate((valid: any) => {
+async function addOrUpdateRole(formSubmit: any) {
+  await formSubmit.validate((valid: any) => {
     if (valid) {
       let value = form.value;
       let params = new URLSearchParams();
+      params.append("id", value.id);
       params.append("name", value.name);
       params.append("description", value.description);
       proxy.$http
-        .post("role/addRole", params)
+        .post("role/addOrUpdateRole", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
-            ElMessage.success("新增角色成功");
-            dialogFormVisibleAdd.value = false
-            formSubmit.resetFields();
+            ElMessage.success(addOrUpdateTitle.value + "成功");
+            dialogFormVisibleAdd.value = false;
             getRole();
           } else {
-            ElMessage.error("新增角色失败");
+            ElMessage.error(addOrUpdateTitle.value + "失败");
           }
         });
     } else {
