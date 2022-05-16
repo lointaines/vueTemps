@@ -2,7 +2,7 @@
   <div class="backgroundBlack">
     <el-container>
       <el-aside>
-        <div class="headTitle">资源信息系统</div>
+        <div class="headTitle" >西藏民族文化资源信息系统</div>
       </el-aside>
       <el-main>
         <div class="toolbar">
@@ -22,24 +22,19 @@
         </div>
       </el-main>
     </el-container>
-
-
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, getCurrentScope, onMounted, ref } from "vue";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 const router = useRouter();
-const store = useStore();
 const userName = ref("默认");
 const { proxy } = getCurrentInstance() as any;
 const handleCommand = (command: string) => {
-  console.log(command)
   switch (command) {
-
     case 'userInfo':
       gotoUserInfo();
       break;
@@ -58,8 +53,8 @@ const gotoUserInfo = () => {
 }
 
 const gotoSet = () => {
-
 }
+
 const gotoLogout = () => {
   window.localStorage.removeItem('userId');
   window.localStorage.removeItem('satoken');

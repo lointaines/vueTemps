@@ -5,12 +5,6 @@ export default createStore({
     userId: window.localStorage.getItem('userId'),
   },
   mutations: {
-    setUserId(state: any, userId: any) {
-      
-    },
-    removeUserId(state: any) {
-     
-    }
   },
   actions: {
   },

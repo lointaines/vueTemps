@@ -1,7 +1,6 @@
 <template>
   <div>
     <h3>{{ itemName + '下属资源如下：' }}</h3>
-   
     <el-table :data="table.data" text-align="center" stripe border>
       <el-table-column type="selection" />
       <el-table-column prop="id" v-if="false"></el-table-column>
@@ -56,7 +55,7 @@ const router = useRouter();
 const itemId = ref();
 const itemName = ref("");
 const table = reactive({
-  data: "",
+  data: [],
   total: 0,
   pageSize: 5,
   currentPage: 1,

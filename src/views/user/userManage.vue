@@ -16,8 +16,7 @@
 
     <el-divider class="divider" />
     <el-button type="primary" @click="dialogFormVisibleAdd = true" class="addButton">新增用户</el-button>
-    <el-table :data="tableData" text-align="center" stripe border :v-loading="tableLoading" @sort-change="sortChange">
-      <el-table-column type="selection" width="55" />
+    <el-table :data="table.data" text-align="center" stripe border :v-loading="tableLoading" @sort-change="sortChange">
       <el-table-column prop="id" label="用户编号" width="140" v-if="false" />
       <el-table-column prop="name" label="姓名" sortable />
       <el-table-column prop="state" label="状态" align="center">
@@ -39,7 +38,7 @@
       </el-table-column>
     </el-table>
       <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
+        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="table.pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" title="新增用户" width="500px" :close-on-click-modal="false" draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addUser(formRef)" ref="formRef">
         <el-form-item label="登录名" label-width="100px" prop="name">
@@ -64,15 +63,17 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;
 
-const tableData = ref([]);
 const tableLoading = ref(false);
-const total = ref(0);
-const pageSize = ref(5);
-const currentPage = ref(1);
-const dialogFormVisibleAdd = ref(false);
-const orderField = ref("name");
-const orderDirection = ref("descending");
+const table = reactive({
+  data: [],
+  total: 0,
+  pageSize: 5,
+  currentPage: 1,
+  orderDirection: "descending",
+  orderField: "name"
+});
 
+const dialogFormVisibleAdd = ref(false);
 
 const form = ref({
   name: "",
@@ -97,8 +98,8 @@ const rules = ref({
 });
 
 const sortChange = (column: any) => {
-  orderField.value = column.prop;
-  orderDirection.value = column.order;
+  table.orderField = column.prop;
+  table.orderDirection = column.order;
   getUser();
 }
 const stateChange = (row: any) => {
@@ -161,28 +162,27 @@ const handleDelete = (row: any) => {
 };
 
 const handleSizeChange = function (val: number) {
-  pageSize.value = val;
+  table.pageSize = val;
   getUser();
 };
 
 const handleCurrentChange = function (val: number) {
-  currentPage.value = val;
+  table.currentPage = val;
   getUser();
 };
 
 function getUser() {
   let params = new URLSearchParams();
-  params.append("pageSize", String(pageSize.value));
-  params.append("currentPage", String(currentPage.value));
-  params.append("orderField", String(orderField.value));
-  params.append("orderDirection", String(orderDirection.value));
+  params.append("pageSize", String(table.pageSize));
+  params.append("currentPage", String(table.currentPage));
+  params.append("orderField", String(table.orderField));
+  params.append("orderDirection", String(table.orderDirection));
   params.append("name", String(searchForm.value.name));
   params.append("phone", String(searchForm.value.phone));
   proxy.$http.post("user/getAllUser", params).then((res: any) => {
-    tableData.value = res.data.data.content;
-    total.value = res.data.data.totalElements;
+    table.data = res.data.data.content;
+    table.total = res.data.data.totalElements;
     tableLoading.value = false;
-    console.log(res.data);
   });
 }
 

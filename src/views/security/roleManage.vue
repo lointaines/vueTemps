@@ -13,7 +13,7 @@
       </el-form-item>
     </el-form>
     <el-button type="primary" @click="handleAdd" class="addButton">新增角色</el-button>
-    <el-table :data="tableData" text-align="center" stripe border>
+    <el-table :data="table.data" text-align="center" stripe border>
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="角色编号" width="140" v-if="false" />
       <el-table-column prop="name" label="角色名称" />
@@ -28,8 +28,8 @@
       </el-table-column>
     </el-table>
     <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
-      layout="sizes, prev, pager, next, jumper, total" :total="total" @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" :page-size="pageSize" />
+      layout="sizes, prev, pager, next, jumper, total" :total="table.total" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange" :page-size="table.pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" :title="addOrUpdateTitle" width="500px" :close-on-click-modal="false"
       draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addOrUpdateRole(formRef)" ref="formRef">
@@ -50,20 +50,23 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
+import { getCurrentInstance, ref, onMounted,reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;
 
-const total = ref(0);
-const tableData = ref([]);
-const pageSize = ref(5);
-const currentPage = ref(1);
+const table = reactive({
+  data: [],
+  total: 0,
+  pageSize: 5,
+  currentPage: 1,
+  orderDirection: "descending",
+  orderField: "name"
+});
 const dialogFormVisibleAdd = ref(false);
 const addOrUpdateTitle = ref("新增资源类别");
 
 const searchForm = ref({
-
   name: "",
   description: ""
 });
@@ -123,24 +126,24 @@ const handleAdd = function (row: any) {
 };
 
 const handleSizeChange = function (val: number) {
-  pageSize.value = val;
+  table.pageSize = val;
   getRole();
 };
 
 const handleCurrentChange = function (val: number) {
-  currentPage.value = val;
+  table.currentPage = val;
   getRole();
 };
 
 function getRole() {
   let params = new URLSearchParams();
-  params.append("pageSize", String(pageSize.value));
-  params.append("currentPage", String(currentPage.value));
+  params.append("pageSize", String(table.pageSize));
+  params.append("currentPage", String(table.currentPage));
   params.append("name", searchForm.value.name);
   params.append("description", searchForm.value.description);
   proxy.$http.post("role/getAllRole", params).then((res: any) => {
-    tableData.value = res.data.data.content;
-    total.value = res.data.data.totalElements;
+    table.data = res.data.data.content;
+    table.total = res.data.data.totalElements;
     console.log(res.data)
   });
 }

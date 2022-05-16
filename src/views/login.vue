@@ -1,12 +1,12 @@
 <template>
   <div class="loginAll">
-    <el-form :model="form" label-width="80px" class="loginForm" :rules="rule" ref="ruleFormRef">
-      <h3 class="loginTitle"> 西藏民族文化资源管理</h3>
+    <el-form :model="form" label-width="80px" class="loginForm" :rules="rule" ref="ruleFormRef" @keyup.enter="submitForm(ruleFormRef)">
+      <h3 class="loginTitle"> 西藏民族文化资源信息系统</h3>
       <el-form-item label=" 登录名" prop="name" class="fontColor">
         <el-input v-model="form.name" placeholder="请输入用户名" />
       </el-form-item>
       <el-form-item label=" 密码" prop="password"  class="fontColor">
-        <el-input v-model="form.password" placeholder="密码" type="password" />
+        <el-input v-model="form.password" placeholder="请输入密码" type="password" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm(ruleFormRef)">登录</el-button>
@@ -41,25 +41,24 @@ const ruleFormRef = ref();
 const submitForm = async (formEl: any) => {
   await formEl.validate((valid: any) => {
     if (valid) {
-      let value = form.value;
-      let params = new URLSearchParams();
-      params.append("name", value.name);
-      params.append("password", value.password);
-      proxy.$http
-        .post("home/login", params)
-        .then((res: any) => {
-          let result = res.data;
-          if (result.code == 200) {
-            ElMessage.success("登录成功");
-            console.log(result.data);
-            proxy.$http.defaults.headers.common['satoken'] = result.data.saToken;
-            window.localStorage.setItem('userId', result.data.id);
-            window.localStorage.setItem('satoken', result.data.saToken);
-            router.push("/userInfo")
-          } else {
-            ElMessage.error(result.msg);
-          }
-        });
+let value = form.value;
+let params = new URLSearchParams();
+params.append("name", value.name);
+params.append("password", value.password);
+proxy.$http
+  .post("home/login", params)
+  .then((res: any) => {
+    let result = res.data;
+    if (result.code == 200) {
+      ElMessage.success("登录成功");
+      proxy.$http.defaults.headers.common['satoken'] = result.data.saToken;
+      window.localStorage.setItem('userId', result.data.id);
+      window.localStorage.setItem('satoken', result.data.saToken);
+      router.push("/Main")
+    } else {
+      ElMessage.error(result.msg);
+    }
+  });
     }
   });
 };
@@ -77,6 +76,7 @@ const resetForm = async (formEl: any) => {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success("注册成功");
+            submitForm(formEl);
           } else {
             ElMessage.error(result.msg);
           }

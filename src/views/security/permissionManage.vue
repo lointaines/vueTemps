@@ -9,11 +9,9 @@
 </template>
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
 const { proxy } = getCurrentInstance() as any;
 
 const tableData = ref([]);
-
 
 function getPermission() {
   let params = new URLSearchParams();

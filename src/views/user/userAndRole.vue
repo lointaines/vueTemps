@@ -16,7 +16,7 @@
       </el-checkbox-group>
 
     </div>
-    <el-table :data="tableData" text-align="center" stripe border>
+    <el-table :data="table.data" text-align="center" stripe border>
       <el-table-column type="selection" />
       <el-table-column prop="id" label="用户编号" v-if="false" />
       <el-table-column prop="name" label="用户名称"></el-table-column>
@@ -30,12 +30,12 @@
     </el-table>
     <div class="pageTop">
       <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pageSize" />
+        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="table.pageSize" />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
+import { getCurrentInstance, ref, onMounted,reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
 
@@ -44,10 +44,14 @@ const searchForm = ref({
   name: ""
 });
 const searchFormRef = ref();
-const total = ref(0);
-const tableData = ref([]);
-const pageSize = ref(5);
-const currentPage = ref(1);
+const table = reactive({
+  data: [],
+  total: 0,
+  pageSize: 5,
+  currentPage: 1,
+  orderDirection: "descending",
+  orderField: "name"
+});
 const checkList = ref([]);
 const checkListValue = ref();
 let CheckRow = ref([]);
@@ -94,12 +98,12 @@ const successOrFailedMatch = (roleName: string, userId: string) => {
 };
 
 const handleSizeChange = function (val: number) {
-  pageSize.value = val;
+  table.pageSize = val;
   getUserAndRole();
 };
 
 const handleCurrentChange = function (val: number) {
-  currentPage.value = val;
+  table.currentPage = val;
   getUserAndRole();
 };
 
@@ -109,16 +113,16 @@ const handleCheckList = () => {
 
 async function getUserAndRole() {
   let params = new URLSearchParams();
-  params.append("pageSize", String(pageSize.value));
-  params.append("currentPage", String(currentPage.value));
+  params.append("pageSize", String(table.pageSize));
+  params.append("currentPage", String(table.currentPage));
   params.append("name", searchForm.value.name);
   await proxy.$http.post("userAndRole/getAllUserAndRole", params).then((res: any) => {
     tableDataCopy = res.data.data.content;
     console.log(tableDataCopy)
   });
   await proxy.$http.post("user/getAllUser", params).then((res: any) => {
-    tableData.value = res.data.data.content;
-    total.value = res.data.data.totalElements;
+    table.data = res.data.data.content;
+    table.total = res.data.data.totalElements;
   });
 }
 

@@ -1,20 +1,29 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    redirect: '/login',
+    path: '/Main',
+    name: 'Main',
+    redirect:'/Home',
+    component: import('@/views/Main.vue'),
     meta: {
       title: "西藏文化"
     },
     children: [
       {
-        path: '/cropperImage',
-        name: 'cropperImage',
-        component: () => import('@/components/cropperImage.vue'),
+        path: '/Home',
+        name: 'Home',
+        component: () => import('@/views/Home.vue'),
+      },
+      {
+        path: '/visitorHome',
+        name: 'visitorHome',
+        component: () => import('@/views/visitor/visitorHome.vue'),
+      },
+      {
+        path: '/visitorDetail',
+        name: 'visitorDetail',
+        component: () => import('@/views/visitor/visitorDetail.vue'),
       },
       {
         path: '/userManage',
@@ -28,7 +37,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/roleManage',
         name: 'roleManage',
-        component: () => import('@/views/user/roleManage.vue'),
+        component: () => import('@/views/security/roleManage.vue'),
       },
       {
         path: '/userAndRole',
@@ -65,12 +74,14 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/',
+    redirect: '/login',
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/login.vue')
   },
-
-
   {
     path: '/:catchAll(.*)',
     name: '404',

@@ -5,9 +5,6 @@
       <el-form-item label="资源名称" prop="name">
         <el-input v-model="form.name" autocomplete="off" placeholder="请输入资源名称" />
       </el-form-item>
-      <!-- <el-form-item label="资源状态" label-width="100px">
-        <el-input v-model="form.state" placeholder="请输入状态" />
-      </el-form-item> -->
       <el-form-item label="资源类型" prop="type">
         <el-select v-model="form.type" placeholder="请选择资源类型">
           <el-option :label="item.name" v-for="item in itemType" :value="item.id" :key="item.name" />
@@ -21,7 +18,7 @@
           accept=".jpg, .png, .jpeg" :auto-upload="false" draggable>
           <template #tip>
             <div class="el-upload__tip">
-              jpg/png/jpeg files with a size less than 10MB.
+              jpg/png/jpeg 且总文件大小小于10MB.
             </div>
           </template>
           <el-button type="primary">点击上传文件</el-button>
@@ -36,7 +33,6 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Check, Close } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance() as any;
 let fileList: any = []
@@ -46,6 +42,7 @@ const form = ref({
   type: "",
   createTime: ""
 });
+
 const formRef = ref();
 const rules = ref({
   name: [{
@@ -92,6 +89,7 @@ async function addItem(formSubmit: any) {
     }
   });
 };
+
 onMounted(() => {
   let params = new URLSearchParams();
   proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {

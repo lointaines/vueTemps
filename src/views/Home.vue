@@ -1,80 +1,37 @@
 <template>
   <el-container>
-    <!-- 顶部 -->
-    <el-header>
-      <div class="headerP">  <homeHeader></homeHeader></div>
-    
-    </el-header>
-    <el-container>
-      <!-- 侧边栏 -->
-      <el-aside width="200px">
-        <el-scrollbar>
-          <el-menu :default-openeds="['1']" router>
-            <el-sub-menu index="1">
-              <template #title>
-                <el-icon>
-                  <message />
-                </el-icon>
-                <span>用户管理</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="/userInfo">个人信息</el-menu-item>
-                <el-menu-item index="/userManage">用户管理</el-menu-item>
-                <el-menu-item index="/roleManage">角色管理</el-menu-item>
-                <el-menu-item index="/userAndRole">用户授权</el-menu-item>
-              </el-menu-item-group>
-            </el-sub-menu>
-            <el-sub-menu index="2">
-              <template #title>
-                <el-icon>
-                  <icon-menu />
-                </el-icon>
-                <span>文化资源管理</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="/itemManage">资源管理</el-menu-item>
-                <el-menu-item index="/itemAdd">添加资源</el-menu-item>
-                <el-menu-item index="/itemTypeManage">资源类别管理</el-menu-item>
-              </el-menu-item-group>
-            </el-sub-menu>
-              <el-sub-menu index="3">
-              <template #title>
-                <el-icon>
-                  <icon-menu />
-                </el-icon>
-                <span>安全管理</span>
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="/permissionManage">权限查看</el-menu-item>
-                <el-menu-item index="/roleAndPermission">授予权限</el-menu-item>
-              </el-menu-item-group>
-            </el-sub-menu>
-          </el-menu>
-        </el-scrollbar>
-      </el-aside>
-      <el-main>
-        <router-view></router-view>
-      </el-main>
-    </el-container>
+    <el-aside width="400px">
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>西藏民族文化信息系统</span>
+          </div>
+        </template>
+        <p> 简介：致力于西藏民族文化保护工作的一款基于前后端分离项目</p>
+        <p> 当前版本：v1.0.0 </p>
+      </el-card>
+    </el-aside>
+    <el-main class="tech">
+      <el-card>
+        <template #header>
+          <div class="card-header">
+            <span>技术选型</span>
+          </div>
+        </template>
+        <p>前端采用Vue 3.2</p>
+        <p>后端采用SpringMVC、SpringBoot 2.6.6、Spring Data JPA 2.6.6</p>
+        <p>前后端数据交互为Json格式</p>
+        <p>安全框架为Sa-Token 3.0.0</p>
+      </el-card>
+    </el-main>
   </el-container>
 </template>
 
 <script lang="ts" setup>
-import homeHeader from "@/components/homeHeader.vue"
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 </script>
 
-<style scoped lang="scss">
-.el-aside .el-menu {
-  background-color: rgb(217, 236, 255);
-  height: 100vh;
-  overflow:auto
-}
-.headerP{
-  height: 100%;
-}
-
-.el-header{
-  padding: 0px;
+<style scoped>
+.tech{
+  padding-top: 0px;
 }
 </style>

@@ -5,7 +5,6 @@
       <el-checkbox-group v-model="checkList" @change="handleCheckList" :max="5">
         <el-checkbox :label="item.name" v-for="item of checkListValue" :key="item.name" border></el-checkbox>
       </el-checkbox-group>
-
     </div>
     <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column prop="id" v-if="false" />
@@ -82,7 +81,6 @@ const handleCheckList = () => {
 async function getUserAndRole() {
   await proxy.$http.post("security/getAllRoleAndPermission").then((res: any) => {
     tableDataCopy = res.data.data.content;
-    console.log(tableDataCopy)
   });
   await proxy.$http.post("role/getAllRoleCheckBox").then((res: any) => {
     tableData.value = res.data.data;
@@ -102,8 +100,6 @@ onMounted(() => {
 .checkBox {
   margin-bottom: 15px;
 }
-
-
 
 .pageTop {
   margin-top: 20px;

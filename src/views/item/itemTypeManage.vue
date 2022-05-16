@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button type="primary" @click="handleAdd" class="addButton">新增类型</el-button>
-    <el-table :data="tableData" text-align="center" stripe border>
+    <el-table :data="table.data" text-align="center" stripe border>
       <el-table-column type="selection" />
       <el-table-column prop="id" label="资源类别编号" v-if="false" />
       <el-table-column prop="name" label="资源类别名称"></el-table-column>
@@ -14,8 +14,8 @@
       </el-table-column>
     </el-table>
     <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
-      layout="sizes, prev, pager, next, jumper, total" :total="total" @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" :page-size="pageSize" />
+      layout="sizes, prev, pager, next, jumper, total" :total="table.total" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange" :page-size="table.pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" :title="addOrUpdateTitle" width="500px" :close-on-click-modal="false"
       draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addOrUpdateItemType(formRef)" ref="formRef">
@@ -39,17 +39,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
+import { getCurrentInstance, ref, onMounted,reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const { proxy } = getCurrentInstance() as any;
+const table = reactive({
+  data: [],
+  total: 0,
+  pageSize: 5,
+  currentPage: 1,
+  orderDirection: "descending",
+  orderField: "name"
+});
 
-const total = ref(0);
-const tableData = ref([]);
-const pageSize = ref(5);
-const currentPage = ref(1);
-const orderField = ref("name");
-const orderDirection = ref("descending");
 const dialogFormVisibleAdd = ref(false);
 const addOrUpdateTitle = ref("新增资源类别");
 
@@ -66,12 +68,12 @@ const rules = ref({
 });
 
 const handleSizeChange = function (val: number) {
-  pageSize.value = val;
+  table.pageSize = val;
   getItemType();
 };
 
 const handleCurrentChange = function (val: number) {
-  currentPage.value = val;
+  table.currentPage = val;
   getItemType();
 };
 
@@ -117,11 +119,11 @@ const handleAdd = function (row: any) {
 
 function getItemType() {
   let params = new URLSearchParams();
-  params.append("pageSize", String(pageSize.value));
-  params.append("currentPage", String(currentPage.value));
+  params.append("pageSize", String(table.pageSize));
+  params.append("currentPage", String(table.currentPage));
   proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {
-    tableData.value = res.data.data.content;
-    total.value = res.data.data.totalElements;
+    table.data = res.data.data.content;
+    table.total = res.data.data.totalElements;
   });
 }
 

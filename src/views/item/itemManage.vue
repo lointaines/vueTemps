@@ -21,7 +21,7 @@
       <el-table-column prop="name" label="资源名称"></el-table-column>
       <el-table-column prop="state" label="资源状态">
         <template #default="scope">
-          <el-button v-if="scope.row.state == 1" type="success" :icon="Check" size="small" />
+          <el-button v-if="scope.row.state == true" type="success" :icon="Check" size="small" />
           <el-button v-else type="danger" :icon="Close" size="small" />
         </template>
       </el-table-column>
@@ -31,7 +31,7 @@
       <el-table-column prop="editTime" label="上次编辑时间" min-width="100px"></el-table-column>
       <el-table-column label="操作" min-width="160px" align="center">
         <template #default="scope">
-          <el-button size="small" @click="handleCheck(scope.row)">查看下属资料</el-button>
+          <el-button size="small" @click="handleCheck(scope.row)">详情</el-button>
           <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
@@ -61,8 +61,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="起源时间" label-width="100px" prop="originalTime">
-          <el-date-picker v-model="form.originalTime" type="date" placeholder="请选择起源时间" 
-            format="YYYY/MM/DD" value-format="YYYY-MM-DD"/>
+          <el-date-picker v-model="form.originalTime" type="date" placeholder="请选择起源时间" format="YYYY/MM/DD"
+            value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="资源简述" label-width="100px" prop="content">
           <el-input type="textarea" autosize v-model="form.content" placeholder="请输入资源简述" />
@@ -87,7 +87,7 @@ const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
 
 const table = reactive({
-  data: "",
+  data: [],
   total: 0,
   pageSize: 5,
   currentPage: 1,
@@ -174,9 +174,7 @@ const handleCheck = function (row: any) {
 };
 
 const handleEdit = function (row: any) {
-
   form.value = row;
-  console.log(form)
   dialogData.visible = true;
 };
 
@@ -189,31 +187,33 @@ async function getItem() {
   params.append("name", searchForm.value.name);
   params.append("itemType", searchForm.value.itemTypeValue);
   await proxy.$http.post("item/getAllItem", params).then((res: any) => {
+    // console.log(res)
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });
 }
 
-async function updateItem(formSubmit: any) {
-  await formSubmit.validate((valid: any) => {
+function updateItem(formSubmit: any) {
+  formSubmit.validate((valid: any) => {
     if (valid) {
       let value = form.value;
       let params = new URLSearchParams();
       params.append("id", value.id);
       params.append("name", value.name);
+      params.append("state", value.state);
       params.append("content", value.content);
-      proxy.$http
-        .post("item/updateItem", params)
-        .then((res: any) => {
-          let result = res.data;
-          if (result.code == 200) {
-            ElMessage.success(dialogData.title + "成功");
-            dialogData.visible = false;
-            getItem();
-          } else {
-            ElMessage.error(dialogData.title + "类别失败");
-          }
-        });
+      params.append("type", value.itemType.id);
+      params.append("originalTime", String(new Date(value.originalTime)));
+      proxy.$http.post("item/updateItem", params).then((res: any) => {
+        let result = res.data;
+        if (result.code == 200) {
+          ElMessage.success("更新成功");
+          dialogData.visible = false;
+          getItem();
+        } else {
+          ElMessage.error("更新失败");
+        }
+      });
     } else {
       return false;
     }
@@ -221,7 +221,6 @@ async function updateItem(formSubmit: any) {
 }
 
 onMounted(() => {
-  let params = new URLSearchParams();
   proxy.$http.post("itemType/getAllItemType").then((res: any) => {
     itemType.value = res.data.data.content;
   });

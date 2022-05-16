@@ -9,11 +9,22 @@ import { zhCn } from 'element-plus/lib/locale'
 import VueCropper from 'vue-cropper';
 import 'vue-cropper/dist/index.css'
 const app = createApp(App);
-
+import { ElMessage, ElMessageBox } from "element-plus";
 axios.defaults.baseURL = '/api';
+axios.interceptors.response.use(response => {
+    let code = response.data.code;
+    if (code == 401) {
+        ElMessage.error("请先登录");
+        router.push("/login")
+    } else if (code == 403) {
+        ElMessage.error("权限不足");
+    }
+    return response;
+})
+app.config.globalProperties.$http = axios;
 
-app.config.globalProperties.$http = axios
 router.beforeEach((to, from, next) => {
+
     if (to.meta.title) {
         document.title = to.meta.title + "";
     }
