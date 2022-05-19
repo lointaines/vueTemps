@@ -2,7 +2,6 @@
   <div>
     <el-button type="primary" @click="handleAdd" class="addButton">新增类型</el-button>
     <el-table :data="table.data" text-align="center" stripe border>
-      <el-table-column type="selection" />
       <el-table-column prop="id" label="资源类别编号" v-if="false" />
       <el-table-column prop="name" label="资源类别名称"></el-table-column>
       <el-table-column prop="description" label="资源类别描述"></el-table-column>

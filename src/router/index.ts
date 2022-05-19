@@ -5,7 +5,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/Main',
     name: 'Main',
     redirect:'/Home',
-    component: import('@/views/Main.vue'),
+    component:  () =>import('@/views/Main.vue'),
     meta: {
       title: "西藏文化"
     },
@@ -42,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/userAndRole',
         name: 'userAndRole',
-        component: () => import('@/views/user/userAndRole.vue'),
+        component: () => import('@/views/security/userAndRole.vue'),
       },
       {
         path: '/itemManage',

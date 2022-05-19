@@ -14,13 +14,12 @@
     </el-form>
     <el-button type="primary" @click="handleAdd" class="addButton">新增角色</el-button>
     <el-table :data="table.data" text-align="center" stripe border>
-      <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="角色编号" width="140" v-if="false" />
       <el-table-column prop="name" label="角色名称" />
       <el-table-column prop="description" label="角色描述" />
       <el-table-column label="操作" width="170" align="center">
         <template #default="scope">
-          <div v-if="(scope.row.name != 'admin') && (scope.row.name != 'user')">
+          <div v-if="(scope.row.name != 'admin') && (scope.row.name != 'user') && (scope.row.name != 'superAdmin')">
             <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </div>
@@ -50,7 +49,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted,reactive } from "vue";
+import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from '@element-plus/icons-vue'
 const { proxy } = getCurrentInstance() as any;

@@ -16,7 +16,6 @@
     </el-form>
 
     <el-table :data="table.data" text-align="center" stripe border>
-      <el-table-column type="selection" />
       <el-table-column prop="id" label="资源编号" v-if="false" />
       <el-table-column prop="name" label="资源名称"></el-table-column>
       <el-table-column prop="state" label="资源状态">
@@ -51,8 +50,8 @@
         </el-form-item>
         <el-form-item label="状态" label-width="100px" prop="id">
           <el-radio-group v-model="form.state">
-            <el-radio :label="1">正常</el-radio>
-            <el-radio :label="0">审核中</el-radio>
+            <el-radio :label="true">正常</el-radio>
+            <el-radio :label="false">审核中</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="类型" label-width="100px" prop="type">
@@ -61,8 +60,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="起源时间" label-width="100px" prop="originalTime">
-          <el-date-picker v-model="form.originalTime" type="date" placeholder="请选择起源时间" format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD" />
+          <el-date-picker v-model="form.originalTime" type="year" placeholder="请选择起源时间" :prefix-icon="Check" />
         </el-form-item>
         <el-form-item label="资源简述" label-width="100px" prop="content">
           <el-input type="textarea" autosize v-model="form.content" placeholder="请输入资源简述" />
@@ -70,7 +68,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogData.visible = false">取消</el-button>
+          <el-button @click="dialogData.visible = false; getItem();">取消</el-button>
           <el-button type="primary" @click="updateItem(formRef)">提交</el-button>
         </span>
       </template>
@@ -78,9 +76,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, reactive } from "vue";
+import { getCurrentInstance, ref, onMounted, reactive, toRef } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
+import { Check, Close, Search, Refresh, Calendar } from '@element-plus/icons-vue'
 import { useRouter } from "vue-router";
 
 const { proxy } = getCurrentInstance() as any;
@@ -228,7 +226,7 @@ onMounted(() => {
 });
 
 </script>
-<style scoped>
+<style scoped lang="scss">
 .pageTop {
   margin-top: 20px;
 }

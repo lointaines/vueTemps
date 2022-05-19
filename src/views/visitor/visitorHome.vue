@@ -6,13 +6,14 @@
     <el-table-column prop="id" v-if="false" />
     <el-table-column prop="name" />
   </el-table>
-   <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="table.pageSize" />
+  <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
+    layout="sizes, prev, pager, next, jumper, total" :total="table.total" @size-change="handleSizeChange"
+    @current-change="handleCurrentChange" :page-size="table.pageSize" />
 </template>
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox, TabsPaneContext } from "element-plus";
-import { Search, Refresh } from '@element-plus/icons-vue'
+
 import { useRouter } from "vue-router";
 const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
@@ -30,6 +31,7 @@ const table = reactive({
   orderDirection: "descending",
   orderField: "name"
 });
+
 const handleSizeChange = function (val: number) {
   table.pageSize = val;
   getAllItemNormal();
@@ -46,7 +48,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   getAllItemNormal();
 }
 const tableRowClick = (row: any) => {
-   let routerData = router.resolve({
+  let routerData = router.resolve({
     name: "visitorDetail",
     path: '/visitorDetail',
     query: {
@@ -74,7 +76,6 @@ function getAllItemNormal() {
   proxy.$http.post("item/getAllItemNormal", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
-    console.log(res.data.data);
   });
 }
 onMounted(() => {
@@ -83,4 +84,7 @@ onMounted(() => {
 });
 </script>
 <style scoped >
+.pageTop {
+  margin-top: 20px;
+}
 </style>

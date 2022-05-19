@@ -51,6 +51,8 @@ const passwordRules = ref({
     required: true, message: "密码不能为空", trigger: "blur"
   }],
   enterPassword: [{
+    required: true, message: "密码不能为空", trigger: "blur"
+  }, {
     validator: validateEnterPassword, trigger: "blur"
   }],
 });
@@ -60,7 +62,7 @@ const updatePassword = (formSubmit: any) => {
       let value = passwordForm.value;
       let params = new URLSearchParams();
       params.append("id", String(window.localStorage.getItem('userId')));
-      
+
       params.append("originalPassword", value.originalPassword);
       params.append("password", value.password);
       proxy.$http

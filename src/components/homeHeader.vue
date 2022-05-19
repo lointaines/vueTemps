@@ -31,7 +31,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 const router = useRouter();
-const userName = ref("默认");
+const userName = ref("未登录");
 const { proxy } = getCurrentInstance() as any;
 const handleCommand = (command: string) => {
   switch (command) {

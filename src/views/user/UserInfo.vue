@@ -17,9 +17,7 @@
               <el-form-item label="邮箱" label-width="100px" prop="email">
                 <el-input v-model="form.email" type="email" />
               </el-form-item>
-              <el-form-item label="性别" label-width="100px" prop="sex">
-                <el-input v-model="form.sex" />
-              </el-form-item>
+              
               <el-form-item label-width="100px">
                 <el-button type="primary" @click="updateUser(formRef)">修改信息</el-button>
               </el-form-item>
@@ -59,7 +57,8 @@ const formCard = ref({
   email: "",
   sex: "",
   phone: "",
-  createTime: ""
+  createTime: "",
+  role:""
 });
 const formRef = ref();
 const rules = ref({
@@ -83,7 +82,6 @@ const updateUser = (formSubmit: any) => {
       params.append("id", String(window.localStorage.getItem('userId')));
       params.append("email", value.email);
       params.append("phone", value.phone);
-      params.append("sex", value.sex);
       proxy.$http
         .post("user/updateUserInfoById", params)
         .then((res: any) => {
@@ -119,6 +117,13 @@ function getUserById() {
 
 onMounted(() => {
   getUserById();
+  let params = new URLSearchParams();
+  params.append("userId", String(window.localStorage.getItem('userId')));
+  proxy.$http.post("userAndRole/getRoleNameByUserId", params).then((res: any) => {
+    if (res.data.code == 200) {
+      formCard.value.role = res.data.data;
+    }
+  });
 });
 </script>
 <style scoped>

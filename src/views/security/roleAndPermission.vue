@@ -1,11 +1,9 @@
 <template>
   <div>
-    <div class="checkBox">
-      <div>勾选以选择查看授权</div>
-      <el-checkbox-group v-model="checkList" @change="handleCheckList" :max="5">
-        <el-checkbox :label="item.name" v-for="item of checkListValue" :key="item.name" border></el-checkbox>
-      </el-checkbox-group>
-    </div>
+    <el-select v-model="selectValue" multiple :multiple-limit="5" collapse-tags 
+      placeholder="选择查看授权" class="selectClass" @change="selectChange">
+      <el-option v-for="item in checkListValue" :value="item.name" :label="item.name" :key="item.name" />
+    </el-select>
     <el-table :data="tableData" text-align="center" stripe border>
       <el-table-column prop="id" v-if="false" />
       <el-table-column prop="name" label="角色名称"></el-table-column>
@@ -25,15 +23,17 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance() as any;
-const searchForm = ref({
-  name: ""
-});
+const selectValue = ref([]);
+
 const tableData = ref([]);
 const checkList = ref([]);
 const checkListValue = ref();
 let CheckRow = ref([]);
 let tableDataCopy: any;
 let checkListValueCopy: any;
+const selectChange = (val: any) => {
+  CheckRow.value = selectValue.value;
+}
 
 const buttonClick = (permissionName: string, roleId: string) => {
   let permissionId;
@@ -74,10 +74,6 @@ const successOrFailedMatch = (permissionName: string, roleId: string) => {
   return false;
 };
 
-const handleCheckList = () => {
-  CheckRow.value = checkList.value;
-}
-
 async function getUserAndRole() {
   await proxy.$http.post("security/getAllRoleAndPermission").then((res: any) => {
     tableDataCopy = res.data.data.content;
@@ -88,7 +84,7 @@ async function getUserAndRole() {
 }
 
 onMounted(() => {
-  proxy.$http.post("security/getAllPermission").then((res: any) => {
+  proxy.$http.post("security/getAllPermissionCheckBox").then((res: any) => {
     checkListValue.value = res.data.data;
     checkListValueCopy = res.data.data;
   });
@@ -97,11 +93,12 @@ onMounted(() => {
 
 </script>
 <style scoped>
-.checkBox {
-  margin-bottom: 15px;
-}
 
 .pageTop {
   margin-top: 20px;
+}
+
+.selectClass{
+  margin-bottom: 20px;
 }
 </style>

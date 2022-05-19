@@ -30,8 +30,7 @@
               <el-menu-item-group>
                 <el-menu-item index="/userInfo">个人信息</el-menu-item>
                 <el-menu-item index="/userManage">用户管理</el-menu-item>
-                <el-menu-item index="/roleManage">角色管理</el-menu-item>
-
+                
               </el-menu-item-group>
             </el-sub-menu>
             <el-sub-menu index="2">
@@ -57,6 +56,7 @@
               <el-menu-item-group>
                 <el-menu-item index="/permissionManage">权限查看</el-menu-item>
                 <el-menu-item index="/roleAndPermission">授予权限</el-menu-item>
+                <el-menu-item index="/roleManage">角色管理</el-menu-item>
                 <el-menu-item index="/userAndRole">用户授权</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>

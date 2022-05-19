@@ -11,7 +11,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="起源时间" prop="date">
-        <el-date-picker v-model="form.createTime" type="date" placeholder="请选择起源时间" style="width: 100%" />
+        <el-date-picker v-model="form.createTime" type="year" placeholder="请选择起源时间" style="width: 100%" />
       </el-form-item>
       <el-form-item label="相关资料">
         <el-upload action="" ref="imgUpload" multiple :limit="3" :file-list="fileList" :on-change="handleChange"
@@ -51,6 +51,9 @@ const rules = ref({
   type: [{
     required: true, message: "资源类型不能为空", trigger: "blur"
   }],
+  date: [{
+    required: false
+  }],
 });
 const itemType = ref([{ id: '', name: '' }]);
 
@@ -72,7 +75,10 @@ async function addItem(formSubmit: any) {
       });
       formData.append("name", value.name);
       formData.append("type", value.type);
-      formData.append("originalTime",value.createTime);
+      if(value.createTime!=null && value.createTime!=""){
+        formData.append("originalTime", value.createTime);
+      }
+      
       proxy.$http
         .post("item/addItem", formData)
         .then((res: any) => {
