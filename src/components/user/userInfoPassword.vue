@@ -22,10 +22,11 @@ import { getCurrentInstance, reactive, getCurrentScope, onBeforeMount, definePro
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from 'axios';
 
 const store = useStore();
 const router = useRouter();
-const { proxy } = getCurrentInstance() as any;
+
 const passWordFormRef = ref();
 const passwordForm = ref({
   password: "",
@@ -65,8 +66,7 @@ const updatePassword = (formSubmit: any) => {
 
       params.append("originalPassword", value.originalPassword);
       params.append("password", value.password);
-      proxy.$http
-        .post("user/updateUserPasswordById", params)
+      axios.post("user/updateUserPasswordById", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -84,5 +84,4 @@ const updatePassword = (formSubmit: any) => {
   });
 }
 </script>
-<style scoped>
-</style>
+<style scoped></style>

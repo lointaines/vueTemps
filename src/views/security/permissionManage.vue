@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage } from "element-plus";
-const { proxy } = getCurrentInstance() as any;
+import axios from 'axios';
 
 const dialogFormVisible = ref(false);
 const table = reactive({
@@ -59,7 +59,7 @@ function getPermission() {
   let params = new URLSearchParams();
   params.append("pageSize", String(table.pageSize));
   params.append("currentPage", String(table.currentPage));
-  proxy.$http.post("security/getAllPermission", params).then((res: any) => {
+  axios.post("security/getAllPermission", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });
@@ -84,7 +84,7 @@ const editDescription = (formRef: any) => {
       let params = new URLSearchParams();
       params.append("id", value.id);
       params.append("description", value.description);
-      proxy.$http.post("security/updateDescriptionByPermissionId", params).then((res: any) => {
+      axios.post("security/updateDescriptionByPermissionId", params).then((res: any) => {
         let result = res.data;
         if (result.code == 200) {
           ElMessage.success("更新成功");

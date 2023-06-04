@@ -38,10 +38,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted,reactive } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 const table = reactive({
   data: [],
   total: 0,
@@ -86,7 +86,7 @@ const handleDelete = function (row: any) {
     .then(() => {
       let params = new URLSearchParams();
       params.append("id", row.id);
-      proxy.$http.post("itemType/deleteItemTypeById", params).then((res: any) => {
+      axios.post("itemType/deleteItemTypeById", params).then((res: any) => {
         if (res.data.code === 200) {
           ElMessage.success("删除成功");
           getItemType();
@@ -120,7 +120,7 @@ function getItemType() {
   let params = new URLSearchParams();
   params.append("pageSize", String(table.pageSize));
   params.append("currentPage", String(table.currentPage));
-  proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {
+  axios.post("itemType/getAllItemType", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });
@@ -134,8 +134,7 @@ async function addOrUpdateItemType(formSubmit: any) {
       params.append("id", value.id);
       params.append("name", value.name);
       params.append("description", value.description);
-      proxy.$http
-        .post("itemType/addOrUpdateItemType", params)
+      axios.post("itemType/addOrUpdateItemType", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {

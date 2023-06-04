@@ -2,13 +2,13 @@
   <div class="backgroundBlack">
     <el-container>
       <el-aside>
-        <div class="headTitle" >西藏民族文化资源信息系统</div>
+        <div class="headTitle">西藏民族文化资源信息系统</div>
       </el-aside>
       <el-main>
         <div class="toolbar">
           <el-dropdown @command="handleCommand">
-            <el-icon class="setIcon">
-              <setting color="white" />
+            <el-icon class="setIcon" :size="20" color="white">
+              <setting />
             </el-icon>
             <template #dropdown>
               <el-dropdown-menu>
@@ -25,14 +25,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import axios from 'axios';
 
 const router = useRouter();
 const userName = ref("未登录");
-const { proxy } = getCurrentInstance() as any;
 const handleCommand = (command: string) => {
   switch (command) {
     case 'userInfo':
@@ -63,7 +62,7 @@ const gotoLogout = () => {
 function getUserNameById() {
   let params = new URLSearchParams();
   params.append("id", String(window.localStorage.getItem('userId')));
-  proxy.$http.post("user/getUserById", params).then((res: any) => {
+  axios.post("user/getUserById", params).then((res: any) => {
     if (res.data.code == 200) {
       userName.value = res.data.data.name;
     }
@@ -80,7 +79,6 @@ onMounted(() => {
   color: #fff;
   height: 100%;
 }
-
 
 .headTitle {
   height: 50px;

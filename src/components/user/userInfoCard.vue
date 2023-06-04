@@ -107,7 +107,8 @@
 import { getCurrentInstance, ref, onMounted, defineProps } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { User, Iphone, Message, Calendar, Postcard } from '@element-plus/icons-vue'
-const { proxy } = getCurrentInstance() as any;
+import axios from 'axios';
+
 const dialogVisible = ref(false);
 const props = defineProps({
   msg: {
@@ -167,8 +168,7 @@ const headAction = () => {
   let formData = new FormData();
   formData.append("id", props.msg.id);
   formData.append("file", headFile.value)
-  proxy.$http
-    .post("user/updateUserHeadById", formData)
+  axios.post("user/updateUserHeadById", formData)
     .then((res: any) => {
       let result = res.data;
       if (result.code == 200) {
@@ -184,8 +184,7 @@ const getUserHead = () => {
   let params = new URLSearchParams();
   let id = window.localStorage.getItem("userId");
   params.append("id", String(id));
-  proxy.$http
-    .post("user/getUserHeadById", params)
+  axios.post("user/getUserHeadById", params)
     .then((res: any) => {
       let result = res.data;
       if (result.code == 200) {

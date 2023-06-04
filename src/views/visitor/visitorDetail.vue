@@ -9,8 +9,8 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
 const item = reactive({
   id: "",
@@ -26,7 +26,7 @@ function getItemImgByItemId() {
   let params = new URLSearchParams();
   params.append("itemId", String(item.id));
 
-  proxy.$http.post("itemImg/getOneItemImgByItemId", params).then((res: any) => {
+  axios.post("itemImg/getOneItemImgByItemId", params).then((res: any) => {
     console.log(res.data.data.content)
     itemImages.value = res.data.data.content;
   });
@@ -36,7 +36,7 @@ onMounted(() => {
   item.id = String(router.currentRoute.value.query.id);
   let params = new URLSearchParams();
   params.append("id", String(item.id));
-  proxy.$http.post("item/getItemByIdNormal", params).then((res: any) => {
+  axios.post("item/getItemByIdNormal", params).then((res: any) => {
     item.name = "“" + res.data.data.name + "”";
     item.content = res.data.data.content;
   });

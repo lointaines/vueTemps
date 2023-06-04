@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+
     <el-form :model="searchForm" :inline="true" ref="searchFormRef">
       <el-form-item label="姓名" prop="name">
         <el-input v-model="searchForm.name" autocomplete="off" placeholder="请输入用户名" />
@@ -19,26 +19,32 @@
     <el-table :data="table.data" text-align="center" stripe border :v-loading="tableLoading" @sort-change="sortChange">
       <el-table-column prop="id" label="用户编号" width="140" v-if="false" />
       <el-table-column prop="name" label="姓名" sortable />
-      <el-table-column prop="state" label="状态" align="center">
+      <el-table-column prop="state" label="状态(激活/禁用)" align="center">
         <template #default="scope">
           <div>
             <el-switch v-model="scope.row.state" @change="stateChange(scope.row)" />
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="sex" label="性别" align="center" />
+      <el-table-column prop="sex" label="性别" align="center">
+        <template #default="scope">
+          {{ scope.row.sex === 0 ? '男' : '女' }}
+        </template>
+      </el-table-column>
       <el-table-column prop="birthday" label="生日" sortable />
       <el-table-column prop="email" label="邮箱" sortable />
       <el-table-column prop="phone" label="联系电话" sortable />
       <el-table-column prop="createTime" label="注册时间" min-width="85px" sortable />
+      <el-table-column prop="loginTime" label="上次登录时间" min-width="85px" sortable />
       <el-table-column label="操作" width="170" align="center">
         <template #default="scope">
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-      <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="table.pageSize" />
+    <el-pagination class="pageTop" background :page-sizes="[5, 10, 20, 30]"
+      layout="sizes, prev, pager, next, jumper, total" :total="table.total" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange" :page-size="table.pageSize" />
     <el-dialog v-model="dialogFormVisibleAdd" title="新增用户" width="500px" :close-on-click-modal="false" draggable>
       <el-form :model="form" :rules="rules" @keyup.enter="addUser(formRef)" ref="formRef">
         <el-form-item label="登录名" label-width="100px" prop="name">
@@ -58,10 +64,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from '@element-plus/icons-vue'
-const { proxy } = getCurrentInstance() as any;
+import axios from 'axios';
 
 const tableLoading = ref(false);
 const table = reactive({
@@ -116,8 +122,7 @@ const stateChange = (row: any) => {
       params.append("id", row.id);
       params.append("state", String(row.state));
       console.log(row.id, row.state)
-      proxy.$http
-        .post("user/updateUserStateById", params)
+      axios.post("user/updateUserStateById", params)
         .then((res: any) => {
           let result = res.data;
           console.log(result)
@@ -145,8 +150,7 @@ const handleDelete = (row: any) => {
     .then(() => {
       let params = new URLSearchParams();
       params.append("id", row.id);
-      proxy.$http
-        .post("user/deleteUserById", params)
+      axios.post("user/deleteUserById", params)
         .then((res: any) => {
           if (res.data.code == 200) {
             ElMessage.success("删除成功");
@@ -179,7 +183,7 @@ function getUser() {
   params.append("orderDirection", String(table.orderDirection));
   params.append("name", String(searchForm.value.name));
   params.append("phone", String(searchForm.value.phone));
-  proxy.$http.post("user/getAllUser", params).then((res: any) => {
+  axios.post("user/getAllUser", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
     tableLoading.value = false;
@@ -193,8 +197,7 @@ function addUser(formSubmit: any) {
       let params = new URLSearchParams();
       params.append("name", value.name);
       params.append("password", value.password);
-      proxy.$http
-        .post("home/register", params)
+      axios.post("home/register", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -220,7 +223,8 @@ onMounted(() => {
 .addButton {
   margin-bottom: 10px;
 }
-.pageTop{
+
+.pageTop {
   margin-top: 20px;
 }
 

@@ -52,7 +52,7 @@
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from '@element-plus/icons-vue'
-const { proxy } = getCurrentInstance() as any;
+import axios from 'axios';
 
 const table = reactive({
   data: [],
@@ -92,8 +92,7 @@ const handleDelete = (row: any) => {
     .then(() => {
       let params = new URLSearchParams();
       params.append("id", row.id);
-      proxy.$http
-        .post("role/deleteRoleById", params)
+      axios.post("role/deleteRoleById", params)
         .then((res: any) => {
           if (res.data.code == 200) {
             ElMessage.success("删除成功");
@@ -140,7 +139,7 @@ function getRole() {
   params.append("currentPage", String(table.currentPage));
   params.append("name", searchForm.value.name);
   params.append("description", searchForm.value.description);
-  proxy.$http.post("role/getAllRole", params).then((res: any) => {
+  axios.post("role/getAllRole", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
     console.log(res.data)
@@ -155,8 +154,7 @@ async function addOrUpdateRole(formSubmit: any) {
       params.append("id", value.id);
       params.append("name", value.name);
       params.append("description", value.description);
-      proxy.$http
-        .post("role/addOrUpdateRole", params)
+      axios.post("role/addOrUpdateRole", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {

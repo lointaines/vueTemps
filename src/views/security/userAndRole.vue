@@ -30,16 +30,20 @@
     </el-table>
     <div class="pageTop">
       <el-pagination background :page-sizes="[5, 10, 20, 30]" layout="sizes, prev, pager, next, jumper, total"
-        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="table.pageSize" />
+        :total="table.total" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+        :page-size="table.pageSize" />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted,reactive } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
-
-const { proxy } = getCurrentInstance() as any;
+import axios from 'axios';
+interface Role {
+  id: string,
+  name: string,
+}
 const searchForm = ref({
   name: ""
 });
@@ -52,9 +56,9 @@ const table = reactive({
   orderDirection: "descending",
   orderField: "name"
 });
-const checkList = ref([]);
-const checkListValue = ref();
-let CheckRow = ref([]);
+const checkList = ref<Role[]>([]);
+const checkListValue = ref<Role[]>();
+let CheckRow = ref<Role[]>([]);
 let tableDataCopy: any;
 let checkListValueCopy: any;
 
@@ -69,7 +73,7 @@ const buttonClick = (roleName: string, userId: string) => {
   let params = new URLSearchParams();
   params.append("roleId", roleId);
   params.append("userId", userId);
-  proxy.$http.post("userAndRole/updateUserAndRole", params).then((res: any) => {
+  axios.post("userAndRole/updateUserAndRole", params).then((res: any) => {
     if (res.data.code === 200) {
       getUserAndRole().then(() => {
         ElMessage.success("更新成功");
@@ -116,18 +120,17 @@ async function getUserAndRole() {
   params.append("pageSize", String(table.pageSize));
   params.append("currentPage", String(table.currentPage));
   params.append("name", searchForm.value.name);
-  await proxy.$http.post("userAndRole/getAllUserAndRole", params).then((res: any) => {
+  await axios.post("userAndRole/getAllUserAndRole", params).then((res: any) => {
     tableDataCopy = res.data.data.content;
-    console.log(tableDataCopy)
   });
-  await proxy.$http.post("user/getAllUser", params).then((res: any) => {
+  await axios.post("user/getAllUser", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });
 }
 
 onMounted(() => {
-  proxy.$http.post("role/getAllRoleCheckBox").then((res: any) => {
+  axios.post("role/getAllRoleCheckBox").then((res: any) => {
     checkListValue.value = res.data.data;
     checkListValueCopy = res.data.data;
   });

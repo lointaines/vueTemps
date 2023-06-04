@@ -1,11 +1,12 @@
 <template>
   <div class="loginAll">
-    <el-form :model="form" label-width="80px" class="loginForm" :rules="rule" ref="ruleFormRef" @keyup.enter="submitForm(ruleFormRef)">
+    <el-form :model="form" label-width="80px" class="loginForm" :rules="rule" ref="ruleFormRef"
+      @keyup.enter="submitForm(ruleFormRef)">
       <h3 class="loginTitle"> 西藏民族文化资源信息系统</h3>
       <el-form-item label=" 登录名" prop="name" class="fontColor">
         <el-input v-model="form.name" placeholder="请输入用户名" />
       </el-form-item>
-      <el-form-item label=" 密码" prop="password"  class="fontColor">
+      <el-form-item label=" 密码" prop="password" class="fontColor">
         <el-input v-model="form.password" placeholder="请输入密码" type="password" />
       </el-form-item>
       <el-form-item>
@@ -21,10 +22,9 @@ import { ref, getCurrentInstance } from "vue";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
-const store = useStore();
 const form = ref({
   name: "",
   password: "",
@@ -41,24 +41,23 @@ const ruleFormRef = ref();
 const submitForm = async (formEl: any) => {
   await formEl.validate((valid: any) => {
     if (valid) {
-let value = form.value;
-let params = new URLSearchParams();
-params.append("name", value.name);
-params.append("password", value.password);
-proxy.$http
-  .post("home/login", params)
-  .then((res: any) => {
-    let result = res.data;
-    if (result.code == 200) {
-      ElMessage.success("登录成功");
-      proxy.$http.defaults.headers.common['satoken'] = result.data.saToken;
-      window.localStorage.setItem('userId', result.data.id);
-      window.localStorage.setItem('satoken', result.data.saToken);
-      router.push("/Main")
-    } else {
-      ElMessage.error(result.msg);
-    }
-  });
+      let value = form.value;
+      let params = new URLSearchParams();
+      params.append("name", value.name);
+      params.append("password", value.password);
+      axios.post("home/login", params)
+        .then((res: any) => {
+          let result = res.data;
+          if (result.code == 200) {
+            ElMessage.success("登录成功");
+            axios.defaults.headers.common['satoken'] = result.data.saToken;
+            window.localStorage.setItem('userId', result.data.id);
+            window.localStorage.setItem('satoken', result.data.saToken);
+            router.push("/Main")
+          } else {
+            ElMessage.error(result.msg);
+          }
+        });
     }
   });
 };
@@ -70,8 +69,7 @@ const resetForm = async (formEl: any) => {
       let params = new URLSearchParams();
       params.append("name", value.name);
       params.append("password", value.password);
-      proxy.$http
-        .post("home/register", params)
+      axios.post("home/register", params)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -87,11 +85,11 @@ const resetForm = async (formEl: any) => {
 </script>
 <style >
 .loginAll {
-  color: aliceblue;
+  color: black;
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background-image: url('~@/assets/image/homeBackground.jpg');
+  background-image: url('~@/assets/image/background.png');
   background-size: 100% 100%;
 }
 
@@ -106,7 +104,7 @@ const resetForm = async (formEl: any) => {
 }
 
 .fontColor .el-form-item__label {
-  color: aliceblue;
+  color: black;
 }
 
 .loginTitle {

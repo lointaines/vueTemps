@@ -49,8 +49,8 @@
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter } from "vue-router";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
 const itemId = ref();
 const itemName = ref("");
@@ -109,7 +109,7 @@ const handleAdd = function (row: any) {
 const handleDelete = function (row: any) {
   let params = new URLSearchParams();
   params.append("id", row.id);
-  proxy.$http.post("item/deleteItemImgById", params).then((res: any) => {
+  axios.post("item/deleteItemImgById", params).then((res: any) => {
     if (res.data.code === 200) {
       ElMessage.success("删除成功");
       getItemImgByItemId();
@@ -127,7 +127,7 @@ async function addOrUpdateItemImg(formSubmit: any) {
       params.append("id", value.id);
       params.append("name", value.name);
       params.append("description", value.description);
-      proxy.$http
+      axios
         .post("itemImg/addOrUpdateItemImg", params)
         .then((res: any) => {
           let result = res.data;
@@ -153,7 +153,7 @@ async function getItemImgByItemId() {
   params.append("orderField", String(table.orderField));
   params.append("orderDirection", String(table.orderDirection));
 
-  await proxy.$http.post("itemImg/getItemImgByItemId", params).then((res: any) => {
+  await axios.post("itemImg/getItemImgByItemId", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });
@@ -164,7 +164,7 @@ onMounted(() => {
   getItemImgByItemId();
   let params = new URLSearchParams();
   params.append("id", String(itemId.value.id));
-  proxy.$http.post("item/getItemById", params).then((res: any) => {
+  axios.post("item/getItemById", params).then((res: any) => {
     itemName.value = "“" + res.data.data.name + "”";
   });
 });

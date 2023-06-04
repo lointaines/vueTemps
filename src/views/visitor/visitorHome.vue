@@ -13,9 +13,10 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox, TabsPaneContext } from "element-plus";
+import axios from 'axios';
 
 import { useRouter } from "vue-router";
-const { proxy } = getCurrentInstance() as any;
+
 const router = useRouter();
 const itemTypeTabs = ref([{
   name: "",
@@ -59,7 +60,7 @@ const tableRowClick = (row: any) => {
 }
 
 function getItemTypeVisiter() {
-  proxy.$http.post("itemType/getAllItemTypeTabs").then((res: any) => {
+  axios.post("itemType/getAllItemTypeTabs").then((res: any) => {
     itemTypeTabs.value = res.data.data;
     if (res.data.data) {
       activeName.value = res.data.data[0].id;
@@ -73,7 +74,7 @@ function getAllItemNormal() {
   params.append("type", tabId.value);
   params.append("pageSize", String(table.pageSize));
   params.append("currentPage", String(table.currentPage));
-  proxy.$http.post("item/getAllItemNormal", params).then((res: any) => {
+  axios.post("item/getAllItemNormal", params).then((res: any) => {
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
   });

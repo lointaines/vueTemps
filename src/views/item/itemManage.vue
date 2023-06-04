@@ -80,8 +80,8 @@ import { getCurrentInstance, ref, onMounted, reactive, toRef } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Check, Close, Search, Refresh, Calendar } from '@element-plus/icons-vue'
 import { useRouter } from "vue-router";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 const router = useRouter();
 
 const table = reactive({
@@ -146,7 +146,7 @@ const handleDelete = function (row: any) {
     .then(() => {
       let params = new URLSearchParams();
       params.append("id", row.id);
-      proxy.$http.post("item/deleteItemById", params).then((res: any) => {
+      axios.post("item/deleteItemById", params).then((res: any) => {
         if (res.data.code === 200) {
           ElMessage.success("删除成功");
           getItem();
@@ -184,7 +184,7 @@ async function getItem() {
   params.append("orderDirection", String(table.orderDirection));
   params.append("name", searchForm.value.name);
   params.append("itemType", searchForm.value.itemTypeValue);
-  await proxy.$http.post("item/getAllItem", params).then((res: any) => {
+  await axios.post("item/getAllItem", params).then((res: any) => {
     // console.log(res)
     table.data = res.data.data.content;
     table.total = res.data.data.totalElements;
@@ -202,7 +202,7 @@ function updateItem(formSubmit: any) {
       params.append("content", value.content);
       params.append("type", value.itemType.id);
       params.append("originalTime", String(new Date(value.originalTime)));
-      proxy.$http.post("item/updateItem", params).then((res: any) => {
+      axios.post("item/updateItem", params).then((res: any) => {
         let result = res.data;
         if (result.code == 200) {
           ElMessage.success("更新成功");
@@ -219,7 +219,7 @@ function updateItem(formSubmit: any) {
 }
 
 onMounted(() => {
-  proxy.$http.post("itemType/getAllItemType").then((res: any) => {
+  axios.post("itemType/getAllItemType").then((res: any) => {
     itemType.value = res.data.data.content;
   });
   getItem();

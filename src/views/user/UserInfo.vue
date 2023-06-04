@@ -17,7 +17,12 @@
               <el-form-item label="邮箱" label-width="100px" prop="email">
                 <el-input v-model="form.email" type="email" />
               </el-form-item>
-              
+              <el-form-item label="性别" label-width="100px" prop="sex">
+                <el-radio-group v-model="form.sex">
+                  <el-radio :label="0">男</el-radio>
+                  <el-radio :label="1">女</el-radio>
+                </el-radio-group>
+              </el-form-item>
               <el-form-item label-width="100px">
                 <el-button type="primary" @click="updateUser(formRef)">修改信息</el-button>
               </el-form-item>
@@ -32,34 +37,27 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
+import { ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import userInfoCard from '@/components/user/userInfoCard.vue'
 import userInfoPassword from '@/components/user/userInfoPassword.vue'
-import { useStore } from "vuex";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
-const store = useStore();
+interface UserInfo {
+  id: string,
+  name: string,
+  password: string,
+  email: string,
+  sex: string,
+  phone: string,
+  createTime: string,
+  role: string
+}
 
 const activeName = ref('first');
-const form = ref({
-  id: "",
-  name: "",
-  password: "",
-  email: "",
-  sex: "",
-  phone: "",
-});
+const form = ref<UserInfo>({} as UserInfo);
 
-const formCard = ref({
-  id:"",
-  name: "",
-  email: "",
-  sex: "",
-  phone: "",
-  createTime: "",
-  role:""
-});
+const formCard = ref<UserInfo>({} as UserInfo);
 const formRef = ref();
 const rules = ref({
   name: [{
@@ -76,19 +74,18 @@ const rules = ref({
 const updateUser = (formSubmit: any) => {
   formSubmit.validate((valid: any) => {
     if (valid) {
-      let value = form.value;
-      let params = new URLSearchParams();
-      params.append("name", value.name);
-      params.append("id", String(window.localStorage.getItem('userId')));
-      params.append("email", value.email);
-      params.append("phone", value.phone);
-      proxy.$http
-        .post("user/updateUserInfoById", params)
+      axios.post("user/updateUserInfoById", {
+        "name": String(form.value.name),
+        "id": String(window.localStorage.getItem('userId')),
+        "email": form.value.email,
+        "phone": form.value.phone,
+        "sex": form.value.sex,
+      })
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
             ElMessage.success("修改信息成功");
-            location.reload();
+            getUserById();
           } else {
             ElMessage.error("修改信息失败");
           }
@@ -100,17 +97,14 @@ const updateUser = (formSubmit: any) => {
 }
 
 function getUserById() {
-  let params = new URLSearchParams();
-  params.append("id", String(window.localStorage.getItem('userId')));
-  proxy.$http.post("user/getUserById", params).then((res: any) => {
+  axios.get("user/getUserById", {
+    params: {
+      'id': window.localStorage.getItem('userId')
+    }
+  }).then((res: any) => {
     if (res.data.code == 200) {
       form.value = res.data.data;
-      let data = res.data.data;
-      formCard.value.id = data.id;
-      formCard.value.name = data.name;
-      formCard.value.phone = data.phone;
-      formCard.value.email = data.email;
-      formCard.value.createTime = data.createTime;
+      formCard.value = Object.assign({}, res.data.data);
     }
   });
 }
@@ -119,12 +113,11 @@ onMounted(() => {
   getUserById();
   let params = new URLSearchParams();
   params.append("userId", String(window.localStorage.getItem('userId')));
-  proxy.$http.post("userAndRole/getRoleNameByUserId", params).then((res: any) => {
+  axios.post("userAndRole/getRoleNameByUserId", params).then((res: any) => {
     if (res.data.code == 200) {
       formCard.value.role = res.data.data;
     }
   });
 });
 </script>
-<style scoped>
-</style>
+<style scoped></style>

@@ -33,8 +33,8 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref, onMounted, } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
 let fileList: any = []
 const form = ref({
   name: "",
@@ -75,12 +75,10 @@ async function addItem(formSubmit: any) {
       });
       formData.append("name", value.name);
       formData.append("type", value.type);
-      if(value.createTime!=null && value.createTime!=""){
+      if (value.createTime != null && value.createTime != "") {
         formData.append("originalTime", value.createTime);
       }
-      
-      proxy.$http
-        .post("item/addItem", formData)
+      axios.post("item/addItem", formData)
         .then((res: any) => {
           let result = res.data;
           if (result.code == 200) {
@@ -98,9 +96,8 @@ async function addItem(formSubmit: any) {
 
 onMounted(() => {
   let params = new URLSearchParams();
-  proxy.$http.post("itemType/getAllItemType", params).then((res: any) => {
+  axios.post("itemType/getAllItemType", params).then((res: any) => {
     itemType.value = res.data.data.content;
-    console.log(res.data.data.content);
   });
 });
 </script>

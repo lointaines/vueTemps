@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-select v-model="selectValue" multiple :multiple-limit="5" collapse-tags 
-      placeholder="选择查看授权" class="selectClass" @change="selectChange">
+    <el-select v-model="selectValue" multiple :multiple-limit="5" collapse-tags placeholder="选择查看授权" class="selectClass"
+      @change="selectChange">
       <el-option v-for="item in checkListValue" :value="item.name" :label="item.name" :key="item.name" />
     </el-select>
     <el-table :data="tableData" text-align="center" stripe border>
@@ -18,36 +18,34 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref, onMounted, } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Check, Close, Search, Refresh } from '@element-plus/icons-vue'
+import { ref, onMounted, } from "vue";
+import { ElMessage } from "element-plus";
+import { Check, Close } from '@element-plus/icons-vue'
+import axios from 'axios';
 
-const { proxy } = getCurrentInstance() as any;
-const selectValue = ref([]);
+interface Permission {
+  id: string
+  name: string
+}
+const selectValue = ref<Permission[]>([]);
 
 const tableData = ref([]);
-const checkList = ref([]);
-const checkListValue = ref();
-let CheckRow = ref([]);
 let tableDataCopy: any;
-let checkListValueCopy: any;
-const selectChange = (val: any) => {
+const checkListValue = ref<Permission[]>([]);
+let CheckRow = ref<Permission[]>([]);
+
+let checkListValueCopy: Permission[];
+const selectChange = (val: Permission) => {
   CheckRow.value = selectValue.value;
 }
 
 const buttonClick = (permissionName: string, roleId: string) => {
-  let permissionId;
-  for (let entity of checkListValueCopy) {
-    if (entity.name === permissionName) {
-      permissionId = entity.id;
-      break;
-    }
-  }
+  const permissionId = checkListValueCopy.find(entity => entity.name === permissionName)?.id! as string;
   let params = new URLSearchParams();
   params.append("roleId", roleId);
   params.append("permissionId", permissionId);
-  proxy.$http.post("security/updateRoleAndPermission", params).then((res: any) => {
-    if (res.data.code === 200) {
+  axios.post("security/updateRoleAndPermission", { permissionId, roleId }).then(({ data: { code } }) => {
+    if (code === 200) {
       getUserAndRole().then(() => {
         ElMessage.success("更新成功");
       });
@@ -75,16 +73,16 @@ const successOrFailedMatch = (permissionName: string, roleId: string) => {
 };
 
 async function getUserAndRole() {
-  await proxy.$http.post("security/getAllRoleAndPermission").then((res: any) => {
+  await axios.post("security/getAllRoleAndPermission").then((res: any) => {
     tableDataCopy = res.data.data.content;
   });
-  await proxy.$http.post("role/getAllRoleCheckBox").then((res: any) => {
+  await axios.post("role/getAllRoleCheckBox").then((res: any) => {
     tableData.value = res.data.data;
   });
 }
 
 onMounted(() => {
-  proxy.$http.post("security/getAllPermissionCheckBox").then((res: any) => {
+  axios.post("security/getAllPermissionCheckBox").then((res: any) => {
     checkListValue.value = res.data.data;
     checkListValueCopy = res.data.data;
   });
@@ -93,12 +91,11 @@ onMounted(() => {
 
 </script>
 <style scoped>
-
 .pageTop {
   margin-top: 20px;
 }
 
-.selectClass{
+.selectClass {
   margin-bottom: 20px;
 }
 </style>
